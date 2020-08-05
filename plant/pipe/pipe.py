@@ -13,6 +13,9 @@ class Pipe:
         self.recurse:bool = recurse
         self.contents:list = self.init_pipe_contents()
 
+    def poll(self):
+        pass
+
     def pipe_contents(self) -> list:
         if not self.recurse:
             return [path.join(self.pipe, item) for item in os.listdir(self.pipe)]

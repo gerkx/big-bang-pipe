@@ -4,6 +4,9 @@ class Pipe_State:
         self._stages:list = ['pending', 'ready', 'processing', 'finished', 'error']
         self.fittings:list = fittings
         self.__fitting_idx:int = 0
+        self._subscribers:list = []
+
+        self.subscribe_to_fittings()
 
     def __str__(self):
         return self.summary()
@@ -33,5 +36,23 @@ class Pipe_State:
 
     def processing(self):
         self.__idx = self._stages.index('processing')
+
+    def fitting_update(self, fitting_idx:int, fitting_state:str):
+        if fitting_state == 'error':
+            self.__idx = self._stages.index('error')
+        elif self.fitting_state == 'finished':
+            if self.__fitting_idx == len(self.fittings) - 1:
+                self.__idx = self._stages.index('finished')
+            else:
+                self.__fitting_idx += 1
+                # pick up here
+                # figure out enqueing!!!!
+        else:
+            pass
+        
+
+    def subscribe_to_fittings(self):
+        for idx, fitting in enumerate(self.fittings):
+            fitting.subscribe(idx, self.fitting_update)
 
     # TODO: def update(self):
