@@ -35,24 +35,49 @@ async def file_is_available(filepath:str) -> bool:
 
     available:bool = False
     while not available:
-        static:bool = await file_is_static()
-        free = file_is_free()
+        free:bool = file_is_free()
+        if free:
+            static:bool = await file_is_static()
 
+        free = file_is_free()
         if static and free:
             available = True
     
     return True
 
-async def dir_is_static(dir:str) -> bool:
-    prelim_hash:str = ""
-    for file in walk_dir(dir):
-        prelim_hash += hashfile(file)
-    await asyncio.sleep(2)
-    secondary_hash:str = ""
-    for file in walk_dir(dir):
-        secondary_hash += hashfile(file)
+async def dir_is_static(dir:str, interval:int=2) -> bool:
+    prelim_hash:list = [hashfile(file) for file in walk_dir(dir)]
+    await asyncio.sleep(interval)
+    secondary_hash:list = [hashfile(file) for file in walk_dir(dir)]
     
     if prelim_hash == secondary_hash:
         return True
     
     return False
+
+async def dir_is_available(dir:str):
+    def file_is_free() -> bool:
+        test_path:str = path.join(path.dirname(dir), f'_{path.basename(dir)}')
+        try:
+            os.rename(dir, test_path)
+            os.rename(test_path, dir)
+            return True
+        except OSError:
+            pass
+
+        return False
+
+    available:bool = False
+    while not available:
+        free:bool = False
+        for  file in walk_dir(dir):
+            free = file_is_free()
+        if free:
+            static:bool = await dir_is_available(dir)
+
+        for  file in walk_dir(dir):
+            free = file_is_free()
+        if static and free:
+            available = True
+    
+    return True
