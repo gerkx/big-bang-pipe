@@ -1,4 +1,3 @@
-import time
 import asyncio, os
 from os import path
 from imohash import hashfile
@@ -57,19 +56,3 @@ async def dir_is_static(dir:str) -> bool:
         return True
     
     return False
-        
-
-if __name__ == "__main__":
-    filepath = "Q:\\Dropbox (BigBangBoxSL)\\PROYECTOS\\My preschool monster serie\\PRODUCCION\\Editorial\\Render\\CAT\\S01E04\\momonsters_04_T01_2019_CAT_v001.mov"
-    start = time.time()
-    h = asyncio.run(file_is_available(filepath))
-    # h:str = hashfile(filepath)
-    print(time.time()-start)
-    print(h)
-    # boop = beep(test)
-
-    # boop.yarp.name()
-
-    # boop.name = "zoinks"
-    
-    # boop.yarp.name()

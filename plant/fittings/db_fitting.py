@@ -1,8 +1,4 @@
-from .fitting_state import Fitting_State
+from .base_fittings import Fitting
 
-
-
-class DB_Fitting:
-    def __init__(self, fso):
-        self.state = Fitting_State()
-        self.fso = fso
+class DB_Fitting(Fitting):
+    pass

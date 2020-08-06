@@ -9,6 +9,8 @@ pylint = "*"
 [packages]
 fastapi = "*"
 uvicorn = "*"
+psutil = "*"
+imohash = "*"
 
 [requires]
 python_version = "3.8"

@@ -11,7 +11,7 @@ class FIFO_Queue:
     def worker(self):
         while not self._queue.empty():
             task = self._queue.get()
-            getattr(task.obj, task.method)(task)
+            task()
             self._queue.task_done()
 
     def threaded_workers(self):

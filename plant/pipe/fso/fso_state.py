@@ -1,11 +1,11 @@
 from typing import Callable
 
-class Pipe_State:
+class FSO_State:
     def __init__(self, fittings:list):
-        self.__idx:int = 0
-        self._stages:list = ['pending', 'ready', 'processing', 'finished', 'error']
         self.fittings:list = fittings
+        self.__idx:int = 0
         self.__fitting_idx:int = 0
+        self._stages:list = ['pending', 'ready', 'processing', 'finished', 'error']
         self._subscribers:list = []
 
         self.subscribe_to_fittings()

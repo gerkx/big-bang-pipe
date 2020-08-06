@@ -12,7 +12,7 @@ class ASYNC_Queue:
         # while not self.queue.empty():
         while True:
             task = await self.queue.get()
-            await getattr(task.obj, task.method)(task)
+            await task()
             self.queue.task_done()
 
     async def add(self, *tasks: object):
