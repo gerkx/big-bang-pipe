@@ -2,10 +2,11 @@ from queue import Queue
 from threading import Thread
 
 class FIFO_Queue:
-    def __init__(self, number_of_threads: int = 1):
-       self._queue = Queue()
-       self._threads = self.threaded_workers()
-       self.number_of_threads = number_of_threads
+    def __init__(self, number_of_threads:int = 1):
+        self.sync:bool = True    
+        self._queue:object = Queue()
+        self._threads:list = self.threaded_workers()
+        self.number_of_threads:int = number_of_threads
 
     def worker(self):
         while not self._queue.empty():

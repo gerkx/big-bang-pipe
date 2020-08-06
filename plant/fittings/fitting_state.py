@@ -32,12 +32,7 @@ class Fitting_State:
         for sub in self._subscribers:
             sub['callback'](sub['idx'], self.stage())
 
-    def activate(self):
-        if self.__idx == 0:
-            self.__idx += 1
-            self.broadcast()
-
-    def queue(self):
+    def enqueue(self):
         if self.stage() == 'pending':
             self.set_idx('queued')
             self.broadcast()
@@ -54,19 +49,6 @@ class Fitting_State:
     
     def raise_error(self):
         self.set_idx('error')
-        self.broadcast()
-
-    @property
-    def state(self) -> str:
-        return self._stages[self.__idx]
-
-    @state.setter
-    def state(self, val):
-        try:
-            self.set_idx(val)
-        except:
-
-            self.raise_error()
         self.broadcast()
 
 

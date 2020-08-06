@@ -3,6 +3,7 @@ import time
 
 class ASYNC_Queue: 
     def __init__(self):
+        self.sync:bool = False
         self.loop = asyncio.get_event_loop()
         self.queue = asyncio.Queue()
         self.tasks: list = []
