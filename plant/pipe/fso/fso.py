@@ -3,7 +3,7 @@ from os import path
 from typing import Type
 
 from .fso_state import FSO_State
-from .fso_available import fso_is_available
+from .fso_availability import check_fso_availability
 
 def create_FSO(path, queue):
     fso = FSO(path, [])
@@ -25,17 +25,12 @@ class FSO:
     def broadcast(self):
         for sub in self._subscribers:
             sub(self.__path)
-
    
     def available(self):
-        # print(self.name)
-       fso_is_available(self.path, self.state.ready)
-        # while self.state == 'pending':
+       check_fso_availability(self.path, self.state.ready)
 
-    @staticmethod
-    def hollaback():
-        print('hollllaaaaaa')
-        return
+    def hollaback(self):
+        print(f'{self.name}\'s state is {self.state}')
 
     # path property
     @property

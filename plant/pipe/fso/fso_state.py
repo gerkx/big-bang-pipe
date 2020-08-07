@@ -11,7 +11,8 @@ class FSO_State:
         self.subscribe_to_fittings()
 
     def __str__(self):
-        return self.summary()
+        return self.stage()
+        # return self.summary()
 
     def fitting_state(self) -> str:
         return self.fittings[self.__fitting_idx].state

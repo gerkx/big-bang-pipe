@@ -13,6 +13,8 @@ if __name__ == "__main__":
 
     beep = create_FSO(filepath,queue)
     zoop = create_FSO(boop,queue)
+    yarp = create_FSO(boop,queue)
 
-    print(beep.name)
-    print(zoop.name)
+    print(f'{beep.name}\'s state is {beep.state}')
+    print(f'{zoop.name}\'s state is {zoop.state}')
+    print(f'{yarp.name}\'s state is {yarp.state}')
