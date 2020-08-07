@@ -6,21 +6,25 @@ class ASYNC_Queue:
         self.sync:bool = False
         self.loop = asyncio.get_event_loop()
         self.queue = asyncio.Queue()
-        self.tasks: list = []
+        # self.tasks: list = []
 
     async def async_worker(self):
-        # while not self.queue.empty():
-        while True:
-            task = await self.queue.get()
-            await task()
+        while not self.queue.empty():
+        # while True:
+            obj, task = await self.queue.get()
+            print(obj)
+            print(task)
+            await getattr(obj, task)()
             self.queue.task_done()
 
     async def add(self, *tasks: object):
+        print (f'adding {tasks[0]}')
         tasklist: list = []
         for task in tasks:
             self.queue.put_nowait(task)
-            tasklist.append(self.loop.create_task(self.async_worker()))
+            tasklist.append(self.loop.create_task(await self.async_worker()))
         self.loop.run_until_complete(asyncio.gather(*tasklist))
+        return "beep"
 
     
 

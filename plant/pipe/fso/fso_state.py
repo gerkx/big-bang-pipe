@@ -1,12 +1,12 @@
-from typing import Callable
+# from typing import Callable
 
 class FSO_State:
     def __init__(self, fittings:list):
-        self.fittings:list = fittings
-        self.__idx:int = 0
-        self.__fitting_idx:int = 0
         self._stages:list = ['pending', 'ready', 'processing', 'finished', 'error']
         self._subscribers:list = []
+        self.__idx:int = 0
+        self.__fitting_idx:int = 0
+        self.fittings:list = fittings
 
         self.subscribe_to_fittings()
 
@@ -40,21 +40,19 @@ class FSO_State:
         for idx, fitting in enumerate(self.fittings):
             fitting.subscribe(idx, self.fitting_update)
 
-    def subscribe(self, idx:int, callback:Callable[[int, str]]):
-        self._subscribers.append({
-            'idx': idx,
-            'callback': callback
-        })
+    def subscribe(self, callback):
+        self._subscribers.append(callback)
 
     def broadcast(self):
         for sub in self._subscribers:
-            idx = sub['idx']
-            callback = sub['callback']
-            callback(idx, self.summary)
+            sub()
 
     def ready(self):
+        print('zoinks')
         if self.stage() == 'pending':
             self.set_idx('ready')
+        self.broadcast()
+        return
     
     def process(self):
         if self.stage() == 'ready':
