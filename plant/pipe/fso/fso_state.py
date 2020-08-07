@@ -48,7 +48,6 @@ class FSO_State:
             sub()
 
     def ready(self):
-        print('zoinks')
         if self.stage() == 'pending':
             self.set_idx('ready')
         self.broadcast()

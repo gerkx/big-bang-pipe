@@ -1,15 +1,18 @@
-from plant.pipe.fso.fso import create_FSO
-from plant.queues.async_queue import ASYNC_Queue
-        
+# from plant.pipe.fso.fso import create_FSO
+from plant.pipe.fso import create_FSO
 
 if __name__ == "__main__":
     import asyncio
-    from plant.queues.async_queue import ASYNC_Queue
-    queue = ASYNC_Queue()
+    # from plant.queues.async_queue import ASYNC_Queue
+    from plant.queues.fifo_queue import FIFO_Queue
+    queue = FIFO_Queue()
 
-    # queue = asyncio.Queue()
 
     filepath = "F:\\tmp\\_seq"
-    
-    asyncio.get_event_loop().run_until_complete(create_FSO(filepath, queue))
-    asyncio.get_event_loop().run_until_complete(create_FSO(filepath + "\\boop.mp4", queue))
+    boop = "F:\\tmp\\_seq\\boop.mp4"
+
+    beep = create_FSO(filepath,queue)
+    zoop = create_FSO(boop,queue)
+
+    print(beep.name)
+    print(zoop.name)
