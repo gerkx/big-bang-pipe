@@ -1,5 +1,4 @@
-import asyncio
-import time
+import asyncio, time
 
 class ASYNC_Queue: 
     def __init__(self):
@@ -11,10 +10,10 @@ class ASYNC_Queue:
     async def async_worker(self):
         while not self.queue.empty():
         # while True:
-            obj, task = await self.queue.get()
-            print(obj)
-            print(task)
-            await getattr(obj, task)()
+            task = await self.queue.get()
+            task()
+            # obj, task = await self.queue.get()
+            # await getattr(obj, task)()
             self.queue.task_done()
 
     async def add(self, *tasks: object):
@@ -24,7 +23,6 @@ class ASYNC_Queue:
             self.queue.put_nowait(task)
             tasklist.append(self.loop.create_task(await self.async_worker()))
         self.loop.run_until_complete(asyncio.gather(*tasklist))
-        return "beep"
 
     
 
