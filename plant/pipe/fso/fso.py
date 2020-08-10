@@ -2,34 +2,35 @@ import os
 from os import path
 from typing import Type
 
+from nanoid import generate
+
 from .fso_state import FSO_State
 from .fso_availability import check_fso_availability
 
-def create_FSO(path, queue):
+def create_FSO(path:str, fittings:list, queue:object):
     fso = FSO(path, [])
     queue.add(fso.available)
     return fso
 
 class FSO:
     def __init__(self, path:str, fittings:list):
-        self.__path:str = path
-        self.state:Type[FSO_State] = FSO_State(fittings)
+        self.state:Type[FSO_State] = FSO_State(fittings, self.state_antenna)
         self._subscribers:list = []
-
-        self.state.subscribe(self.hollaback)
-
+        self.__guid = generate()
+        self.__path:str = path
+        
 
     def subscribe(self, callback):
         self._subscribers.append(callback)
 
     def broadcast(self):
-        for sub in self._subscribers:
-            sub(self.__path)
+        for callback in self._subscribers:
+            callback(self.__guid)
    
     def available(self):
        check_fso_availability(self.path, self.state.ready)
 
-    def hollaback(self):
+    def state_antenna(self):
         print(f'{self.name}\'s state is {self.state}')
 
     # path property

@@ -1,12 +1,12 @@
 from typing import Callable
 
 class Fitting_State:
-    def __init__(self):
+    def __init__(self, callback:Callable):
+        self.callback:Callable = callback
         self.__idx:int = 0
         self._stages:list = ['pending', 'queued' 'processing', 'finished', 'error']
-        self._subscribers:list = []
 
-    def __repr__(self):
+    def __repr__(self): 
         return self.__str__()
     
     def __str__(self):
@@ -21,16 +21,9 @@ class Fitting_State:
         except:
             # TODO: implement error handling
             pass
-
-    def subscribe(self, idx:int, callback:Callable[[int, str]]):
-        self._subscribers.append({
-            'idx': idx,
-            'callback': callback
-        })
     
     def broadcast(self):
-        for sub in self._subscribers:
-            sub['callback'](sub['idx'], self.stage())
+        self.callback()
 
     def enqueue(self):
         if self.stage() == 'pending':
