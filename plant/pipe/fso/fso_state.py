@@ -17,6 +17,13 @@ class FSO_State:
     def fitting_state(self) -> str:
         return self.fittings[self.__fitting_idx].state
 
+    def fitting(self):
+        return self.fittings[self.__fitting_idx]
+
+    def link_fitting(self, parent):
+        for fitting in self.fittings:
+            fitting.parent(parent)
+
     @property
     def summary(self) -> str:
         if self.stage() != 'processing':
@@ -35,6 +42,7 @@ class FSO_State:
             self.__idx = self._stages.index(key)
         except:
             # TODO: implement error handling
+            print('except!!!')
             pass
         
     def subscribe_to_fittings(self):
@@ -46,15 +54,18 @@ class FSO_State:
 
     def broadcast(self):
         for callback in self._subscribers:
+            
             callback()
 
     def ready(self):
         if self.stage() == 'pending':
             self.set_idx('ready')
+            self.fitting().enqueue()
         self.broadcast()
         return
     
     def process(self):
+        print(f'am i ready? {self.stage()}')
         if self.stage() == 'ready':
             self.set_idx('processing')
         
@@ -66,17 +77,16 @@ class FSO_State:
         self.set_idx('error')
 
     def fitting_antenna(self):
-        fitting = self.fittings[self.__fitting_idx]
-        if fitting.state == 'error':
+        if self.fitting().state.stage() == 'error':
             self.raise_error()
-        if fitting.state == 'finished':
+        if self.fitting().state.stage() == 'finished':
             if self.__fitting_idx == len(self.fittings) - 1:
-                print('finished')
                 self.finish()
             else:
                 self.__fitting_idx += 1
-                fitting = self.fittings[self.__fitting_idx]
-                fitting.enqueue()
+                self.fitting().enqueue()
+        if self.fitting().state.stage() == 'processing':
+            self.set_idx('processing')
         self.broadcast()
         return
         

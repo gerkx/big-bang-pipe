@@ -7,19 +7,25 @@ if __name__ == "__main__":
     from plant.queues.fifo_queue import FIFO_Queue
     queue = FIFO_Queue()
 
+    from plant.fittings.test_fitting import Test_Fitting
+    from plant.fittings.test_fitting2 import Test_Fitting2
 
+    
+    fittings = [Test_Fitting(queue), Test_Fitting2(queue)]
+    # fittings = []
+    
     uno = "F:\\tmp\\uno"
     dos = "F:\\tmp\\dos"
     tres = "F:\\tmp\\tres"
     boop = "F:\\tmp\\uno\\boop.mp4"
 
-    beep = create_FSO(uno, queue)
-    zoop = create_FSO(dos, queue)
-    yarp = create_FSO(tres, queue)
+    beep = create_FSO(uno, fittings, queue)
+    # zoop = create_FSO(dos, [Test_Fitting(queue)], queue)
+    # yarp = create_FSO(tres, [Test_Fitting(queue)], queue)
 
-    print(f'{beep.name}\'s state is {beep.state}')
-    print(f'{zoop.name}\'s state is {zoop.state}')
-    print(f'{yarp.name}\'s state is {yarp.state}')
+    # print(f'{beep.name}\'s state is {beep.state}')
+    # print(f'{zoop.name}\'s state is {zoop.state}')
+    # print(f'{yarp.name}\'s state is {yarp.state}')
 
     # data = [
     #     [11.4, 3.56, 0.62],

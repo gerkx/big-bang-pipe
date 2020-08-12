@@ -8,7 +8,7 @@ from .fso_state import FSO_State
 from .fso_availability import check_fso_availability
 
 def create_FSO(path:str, fittings:list, queue:object):
-    fso = FSO(path, [])
+    fso = FSO(path, fittings)
     queue.add(fso.available)
     return fso
 
@@ -16,8 +16,10 @@ class FSO:
     def __init__(self, path:str, fittings:list):
         self.state:Type[FSO_State] = FSO_State(fittings, self.state_antenna)
         self._subscribers:list = []
-        self.__guid = generate()
+        self.__guid:str = generate()
         self.__path:str = path
+
+        self.state.link_fitting(self)
         
 
     def subscribe(self, callback):
@@ -31,7 +33,7 @@ class FSO:
        check_fso_availability(self.path, self.state.ready)
 
     def state_antenna(self):
-        print(f'{self.name}\'s state is {self.state}')
+        print(f'{self.name}, id #{self.__guid}\'s state is {self.state}')
 
     # path property
     @property

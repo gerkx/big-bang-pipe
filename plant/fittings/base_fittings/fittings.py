@@ -6,17 +6,17 @@ from .fitting_state import Fitting_State
 
 
 class Fitting:
-    def __init__(self, queue:object, fso:object, **kwargs):
+    def __init__(self, queue:object):
         self.state:object = Fitting_State(self.broadcast)
         self.queue:object = queue
-        self.fso:object = fso
-        self.kwargs:dict = {**kwargs}
+        self.fso:object = None
+        # self.kwargs:dict = {**kwargs}
         self.guid:str = generate()
         self._subscribers:list = []
 
     def enqueue(self):
-        self.queue.add(self.main)
         self.state.enqueue()
+        self.queue.add(self.main)
 
     def main(self):
         self.state.process()
@@ -24,7 +24,11 @@ class Fitting:
         self.state.finish()
 
     def subscribe(self, callback:Callable):
-        self._subscribers.append(callback)
+        if not callback in self._subscribers:
+            self._subscribers.append(callback)
+
+    def parent(self, parent):
+        self.fso = parent
 
     def broadcast(self):
         for callback in self._subscribers:
@@ -32,6 +36,7 @@ class Fitting:
 
     def fitting(self):
         print("overwrite this method with fitting method")
+
 
 class Async_Fitting(Fitting):
 

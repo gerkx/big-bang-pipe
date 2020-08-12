@@ -37,7 +37,6 @@ def dir_is_available(fso_path:str, interval:int=5) -> bool:
     return False
 
 def check_fso_availability(fso_path:str, callback:Callable):
-    print(f'checking avail of {path.basename(fso_path)}')
     available:bool = False
     while not available:
         if path.isdir(fso_path):
@@ -45,6 +44,5 @@ def check_fso_availability(fso_path:str, callback:Callable):
         else:
             available = file_is_available(fso_path)
     
-    print(f'{path.basename(fso_path)} is available')
     callback()
     

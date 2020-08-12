@@ -4,7 +4,7 @@ class Fitting_State:
     def __init__(self, callback:Callable):
         self.callback:Callable = callback
         self.__idx:int = 0
-        self._stages:list = ['pending', 'queued' 'processing', 'finished', 'error']
+        self._stages:list = ['pending', 'queued', 'processing', 'finished', 'error']
 
     def __repr__(self): 
         return self.__str__()
