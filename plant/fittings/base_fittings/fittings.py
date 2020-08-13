@@ -27,7 +27,7 @@ class Fitting:
         if not callback in self._subscribers:
             self._subscribers.append(callback)
 
-    def parent(self, parent):
+    def set_parent(self, parent):
         self.fso = parent
 
     def broadcast(self):

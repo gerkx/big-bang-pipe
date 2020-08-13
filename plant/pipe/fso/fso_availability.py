@@ -23,7 +23,7 @@ def file_is_available(fso_path:str, interval:int=1) -> bool:
 
     return False
 
-def dir_is_available(fso_path:str, interval:int=5) -> bool:
+def dir_is_available(fso_path:str, interval:int=.5) -> bool:
     try:
         prelim_hash:list = [hashfile(file) for file in walk_dir(fso_path)]
         time.sleep(interval)

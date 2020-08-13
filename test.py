@@ -7,11 +7,12 @@ if __name__ == "__main__":
     from plant.queues.fifo_queue import FIFO_Queue
     queue = FIFO_Queue()
 
+
     from plant.fittings.test_fitting import Test_Fitting
     from plant.fittings.test_fitting2 import Test_Fitting2
 
     
-    fittings = [Test_Fitting(queue), Test_Fitting2(queue)]
+    fittings = [Test_Fitting(queue)]
     # fittings = []
     
     uno = "F:\\tmp\\uno"

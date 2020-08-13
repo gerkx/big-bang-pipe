@@ -7,20 +7,18 @@ from nanoid import generate
 from .fso_state import FSO_State
 from .fso_availability import check_fso_availability
 
-def create_FSO(path:str, fittings:list, queue:object):
+def create_FSO(path:str, fittings:list, fifo_queue:object):
     fso = FSO(path, fittings)
-    queue.add(fso.available)
+    fifo_queue.add(fso.available)
     return fso
 
 class FSO:
     def __init__(self, path:str, fittings:list):
-        self.state:Type[FSO_State] = FSO_State(fittings, self.state_antenna)
+        self.state:Type[FSO_State] = FSO_State(fittings, self)
         self._subscribers:list = []
         self.__guid:str = generate()
         self.__path:str = path
-
-        self.state.link_fitting(self)
-        
+      
 
     def subscribe(self, callback):
         self._subscribers.append(callback)
@@ -32,8 +30,13 @@ class FSO:
     def available(self):
        check_fso_availability(self.path, self.state.ready)
 
-    def state_antenna(self):
+    def antenna(self, event):
+        print(f'fso state broadcast event= {event}')
         print(f'{self.name}, id #{self.__guid}\'s state is {self.state}')
+        print(self.state.summary)
+        print("===")
+
+    
 
     # path property
     @property

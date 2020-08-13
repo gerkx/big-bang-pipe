@@ -37,6 +37,7 @@ class Fitting_State:
 
     def finish(self):
         if self.stage() == 'processing':
+            print('donezo')
             self.set_idx('finished')
             self.broadcast()
     

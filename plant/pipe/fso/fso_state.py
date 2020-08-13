@@ -1,92 +1,111 @@
-# from typing import Callable
+from typing import Type
+from enum import Enum, auto
+
+class State(Enum):
+    PENDING = auto()
+    READY = auto()
+    QUEUED = auto()
+    PROCESSING = auto()
+    FINISHED = auto()
+    ERROR = auto()
 
 class FSO_State:
-    def __init__(self, fittings:list, parent_callback):
-        self._stages:list = ['pending', 'ready', 'processing', 'finished', 'error']
-        self._subscribers:list = [parent_callback,]
+    def __init__(self, fittings:list, parent:object):
+        self.__state:Type[State] = State.PENDING
+        self._subscribers:list = [parent.antenna,]
         self.__idx:int = 0
         self.__fitting_idx:int = 0
-        self.fittings:list = fittings
+        self.fittings:list = self.setup_fittings(fittings, parent)
 
-        self.subscribe_to_fittings()
-
+    
     def __str__(self):
-        # return self.stage()
-        return self.summary
+        return self.state.name
+
+    # observer pattern methods
+    def subscribe(self, callback):
+        self._subscribers.append(callback)
+
+    def broadcast(self, event):
+        for callback in self._subscribers:
+            callback(event)
+
+    def antenna(self):
+        # handle fitting error
+        if self.fitting.state.stage() == 'error':
+            self.raise_error()
+        
+        # handle fitting finish
+        if self.fitting.state.stage() == 'finished':
+            # all fittings finished
+            if self.__fitting_idx == len(self.fittings) - 1:
+                self.finish()
+                self.broadcast('all done!!!')
+            # or advance to the next fitting
+            else:
+                self.advance_fitting()
+                self.broadcast('queued next fitting')
+        
+        # handle fitting processing
+        if self.fitting.state.stage() == 'processing':
+            self.process()
+            self.broadcast('set state to processing')
+
+        # handle fitting enqueue
+        if self.fitting.state.stage() == 'queued':
+            self.state = State.QUEUED
+            self.broadcast('task queued')
+    # ####################################################
+
+    # properties an property specific methods
+    @property
+    def state(self):
+        return self.__state
+    @state.setter
+    def state(self, state):
+        self.__state = state
+
+    @property
+    def fitting(self):
+        return self.fittings[self.__fitting_idx]
+    
+    def advance_fitting(self):
+        self.__fitting_idx += 1
+        self.fitting.enqueue()
 
     def fitting_state(self) -> str:
         return self.fittings[self.__fitting_idx].state
-
-    def fitting(self):
-        return self.fittings[self.__fitting_idx]
-
-    def link_fitting(self, parent):
-        for fitting in self.fittings:
-            fitting.parent(parent)
+      
+    def setup_fittings(self, fittings, parent):
+        init_fittings:list = []
+        for fitting in fittings:
+            fitting.subscribe(self.antenna)
+            fitting.set_parent(parent)
+            init_fittings.append(fitting)
+        return init_fittings
 
     @property
     def summary(self) -> str:
-        if self.stage() != 'processing':
-            return self.stage()
+        if self.state != State.PROCESSING:
+            return self.state.name
         else:
             total = len(self.fittings)
             current = self.__fitting_idx + 1
             status = self.fitting_state()
             return f'processing: task {current} of {total} is {status}'
-    
-    def stage(self) -> str:
-        return self._stages[self.__idx]
+    # ######################################################
 
-    def set_idx(self, key):
-        try:
-            self.__idx = self._stages.index(key)
-        except:
-            # TODO: implement error handling
-            print('except!!!')
-            pass
-        
-    def subscribe_to_fittings(self):
-        for fitting in self.fittings:
-            fitting.subscribe(self.fitting_antenna)
-
-    def subscribe(self, callback):
-        self._subscribers.append(callback)
-
-    def broadcast(self):
-        for callback in self._subscribers:
-            
-            callback()
-
+    # state methods
     def ready(self):
-        if self.stage() == 'pending':
-            self.set_idx('ready')
-            self.fitting().enqueue()
-        self.broadcast()
-        return
+        self.state = State.READY
+        self.broadcast('all ready')
+        self.fitting.enqueue()
     
     def process(self):
-        print(f'am i ready? {self.stage()}')
-        if self.stage() == 'ready':
-            self.set_idx('processing')
+        self.state = State.PROCESSING
         
     def finish(self):
-        if self.stage() == 'processing':
-            self.set_idx('finished')
+        self.state = State.FINISHED
 
     def raise_error(self):
-        self.set_idx('error')
-
-    def fitting_antenna(self):
-        if self.fitting().state.stage() == 'error':
-            self.raise_error()
-        if self.fitting().state.stage() == 'finished':
-            if self.__fitting_idx == len(self.fittings) - 1:
-                self.finish()
-            else:
-                self.__fitting_idx += 1
-                self.fitting().enqueue()
-        if self.fitting().state.stage() == 'processing':
-            self.set_idx('processing')
-        self.broadcast()
-        return
+        self.state = State.ERROR
         
