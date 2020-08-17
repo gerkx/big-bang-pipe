@@ -1,17 +1,17 @@
 import os
 import os.path as path
 
-class FSO:
-    def __init__(self, path):
-        self.name = path
+from .fso import create_FSO
+
 
 class Pipe:
-    def __init__(self, dir:str, queues:dict, template:dict, recurse:bool = False,):
+    def __init__(self, dir:str, queues:dict, template:dict, fittings:list, recurse:bool = False,):
         self.pipe:str = dir
         self.queues:dict = queues
         self.template:dict = template
         self.recurse:bool = recurse
-        self.contents:list = self.init_pipe_contents()
+        self._contents:list = self.init_pipe_contents()
+        self._fittings:list = fittings
 
     def poll(self):
         pass
@@ -26,5 +26,22 @@ class Pipe:
                     dir.append(path.join(root, f))
             return dir
 
+    # TODO: figure a way to init each fitting with the appropriate queue... 
+    # maybe just pass the dict and have that be a constant api for the fittings... **kwargs 
     def init_pipe_contents(self) -> list:
-        return [FSO(obj) for obj in self.pipe_contents()]
+        return [create_FSO(obj, self._fittings, self.queues['fifo']) for obj in self.pipe_contents()]
+
+    def check_existing_pipe_contents(self):
+        for fso in self._contents:
+            if not path.exists(fso.path):
+                print(f'fso {fso.name} not found, deleting instance and removing from list')
+                self._fittings.remove(fso)
+                del fso
+
+    def check_new_pipe_contents(self):
+        for obj in self.pipe_contents():
+            if obj not in [fso.path for fso in self._contents]:
+                self._contents.append(
+                    create_FSO(obj, self._fittings, self.queues['fifo'])
+                )
+

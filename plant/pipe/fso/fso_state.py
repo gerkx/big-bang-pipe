@@ -1,9 +1,11 @@
 from typing import Type
 from enum import Enum, auto
 
+
 class State(Enum):
     PENDING = auto()
     READY = auto()
+    LIMBO = auto()
     QUEUED = auto()
     PROCESSING = auto()
     FINISHED = auto()
@@ -30,29 +32,33 @@ class FSO_State:
             callback(event)
 
     def antenna(self):
+        fitting_state = str(self.fitting.state)
         # handle fitting error
-        if self.fitting.state.stage() == 'error':
+        if fitting_state == 'ERROR':
             self.raise_error()
         
         # handle fitting finish
-        if self.fitting.state.stage() == 'finished':
+        if fitting_state == 'FINISHED':
             # all fittings finished
             if self.__fitting_idx == len(self.fittings) - 1:
                 self.finish()
                 self.broadcast('all done!!!')
             # or advance to the next fitting
             else:
+                self.limbo()
+                self.broadcast('fitting finished')
+                print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                 self.advance_fitting()
-                self.broadcast('queued next fitting')
         
         # handle fitting processing
-        if self.fitting.state.stage() == 'processing':
+        if fitting_state == 'PROCESSING':
+            print('itsa process')
             self.process()
             self.broadcast('set state to processing')
 
         # handle fitting enqueue
-        if self.fitting.state.stage() == 'queued':
-            self.state = State.QUEUED
+        if fitting_state == 'QUEUED':
+            self.queue()
             self.broadcast('task queued')
     # ####################################################
 
@@ -61,7 +67,7 @@ class FSO_State:
     def state(self):
         return self.__state
     @state.setter
-    def state(self, state):
+    def state(self, state:Type[State]):
         self.__state = state
 
     @property
@@ -105,6 +111,12 @@ class FSO_State:
         
     def finish(self):
         self.state = State.FINISHED
+
+    def queue(self):
+        self.state = State.QUEUED
+
+    def limbo(self):
+        self.state = State.LIMBO
 
     def raise_error(self):
         self.state = State.ERROR

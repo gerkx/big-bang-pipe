@@ -18,6 +18,9 @@ class FSO:
         self._subscribers:list = []
         self.__guid:str = generate()
         self.__path:str = path
+
+    def __del__(self):
+        print(f'{self.filename} signing off!')
       
 
     def subscribe(self, callback):
@@ -31,7 +34,7 @@ class FSO:
        check_fso_availability(self.path, self.state.ready)
 
     def antenna(self, event):
-        print(f'fso state broadcast event= {event}')
+        print(f'fso state broadcast event = {event}')
         print(f'{self.name}, id #{self.__guid}\'s state is {self.state}')
         print(self.state.summary)
         print("===")
