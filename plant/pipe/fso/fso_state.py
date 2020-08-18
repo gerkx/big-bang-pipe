@@ -21,7 +21,7 @@ class FSO_State:
 
     
     def __str__(self):
-        return self.state.name
+        return self.__state.name
 
     # observer pattern methods
     def subscribe(self, callback):

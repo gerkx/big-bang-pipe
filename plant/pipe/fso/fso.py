@@ -24,27 +24,17 @@ class FSO:
     def __del__(self):
         print(f'{self.filename} signing off!')
     
-    def __delete__(self, instance):
-        print(f'{self.filename} is outttie!')
-      
-
     def subscribe(self, callback):
-        print('new subscriber!')
         self._subscribers.append(callback)
 
     def broadcast(self):
         for callback in self._subscribers:
-            print('ping!!!')
             callback(self.__guid)
    
     def available(self):
        check_fso_availability(self.path, self.state.ready)
 
     def antenna(self, event):
-        print(f'fso state broadcast event = {event}')
-        print(f'{self.name}, id #{self.__guid}\'s state is {self.state}')
-        print(self.state.summary)
-        print("===")
         self.broadcast()
 
     

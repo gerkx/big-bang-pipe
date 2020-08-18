@@ -1,4 +1,4 @@
-import os
+import os, shutil
 import os.path as path
 
 import gc
@@ -9,13 +9,14 @@ from .fso import create_FSO, FSO
 
 class Pipe:
     def __init__(self, dir:str, queues:object, template:dict, fittings:list, recurse:bool = False,):
-        self.pipe:str = dir
+        self.directory:str = dir
         self.queues:object = queues
         self.template:dict = template
         self.recurse:bool = recurse
         self._fittings:list = fittings
         self._contents:list = self.init_pipe_contents()
         self.__active:bool = True
+        self.__lock:bool = False
 
     @property
     def active(self):
@@ -30,23 +31,29 @@ class Pipe:
             self.__active = False
 
     def update(self):
-        if self.active:
+        print("...")
+        if self.active and not self.__lock:
             self.check_existing_pipe_contents()
             self.check_new_pipe_contents()
 
     def antenna(self, guid):
+        self.__lock = True
         fso = next(obj for obj in self._contents if obj.guid == guid)
+        fso_state = str(fso.state)
         print('-+'*10)
-        print(f'pipe says that {fso.name} is {fso.state}')
+        print(f'pipe says that {fso.name} is {fso.state.summary}')
         print('-+'*10)
+        if fso_state == 'FINISHED':
+            self.remove_fso(fso)
+        self.__lock = False
 
 
     def pipe_contents(self) -> list:
         if not self.recurse:
-            return [path.join(self.pipe, item) for item in os.listdir(self.pipe)]
+            return [path.join(self.directory, item) for item in os.listdir(self.directory)]
         else:
             dir:list = []
-            for root, _, files in os.walk(self.pipe):
+            for root, _, files in os.walk(self.directory):
                 for f in files:
                     dir.append(path.join(root, f))
             return dir
@@ -66,16 +73,15 @@ class Pipe:
     def check_existing_pipe_contents(self):
         # rmv_q = []
         for fso in self._contents:
-            print(f'checking that {fso.name} still exists')
             if not path.exists(fso.path):
-                print(f'fso {fso.name} not found, deleting instance and removing from list -- {fso}')
                 self._contents.remove(fso)
+                
+            if str(fso.state) == 'FINISHED':
+                self.remove_fso(fso)
 
     def check_new_pipe_contents(self):
-        print('checking for new pipe contents')
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
-                print(f'{obj} appears to be new! initializing fso')
                 new_fso = create_FSO(
                     obj, 
                     [fitting(self.queues) for fitting in self._fittings], 
@@ -86,4 +92,10 @@ class Pipe:
 
     def reject(self):
         pass
+
+    def remove_fso(self, fso):
+        # print('zeeeeoooooo')
+        self._contents.remove(fso)
+        if fso.directory == self.directory:
+            shutil.rmtree(fso.path) if path.isdir(fso.path) else os.remove(fso.path)
 
