@@ -26,10 +26,15 @@ class Pipe:
                     dir.append(path.join(root, f))
             return dir
 
-    # TODO: figure a way to init each fitting with the appropriate queue... 
-    # maybe just pass the dict and have that be a constant api for the fittings... **kwargs 
+    
     def init_pipe_contents(self) -> list:
-        return [create_FSO(obj, self._fittings, self.queues['fifo']) for obj in self.pipe_contents()]
+        return [
+            create_FSO(
+                obj, 
+                [fitting(self.queues) for fitting in self._fittings], 
+                self.queues['fifo']) 
+                for obj in self.pipe_contents()
+        ]
 
     def check_existing_pipe_contents(self):
         for fso in self._contents:
@@ -41,7 +46,12 @@ class Pipe:
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
-                self._contents.append(
-                    create_FSO(obj, self._fittings, self.queues['fifo'])
-                )
+                self._contents.append(create_FSO(
+                    obj, 
+                    [fitting(self.queues) for fitting in self._fittings], 
+                    self.queues['fifo']
+                ))
+
+    def reject(self):
+        pass
 

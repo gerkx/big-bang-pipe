@@ -6,9 +6,9 @@ from .fitting_state import Fitting_State
 
 
 class Fitting:
-    def __init__(self, queue:object):
+    def __init__(self, queues:dict):
         self.state:object = Fitting_State(self.broadcast)
-        self.queue:object = queue
+        self.queue:object = queues['fifo']
         self.fso:object = None
         # self.kwargs:dict = {**kwargs}
         self.guid:str = generate()
@@ -39,6 +39,9 @@ class Fitting:
 
 
 class Async_Fitting(Fitting):
+    def __init__(self, queues:dict):
+        super().__init__(queues)
+        self.queue = queues['async']
 
     async def enqueue(self):
         await self.queue.add(self.main)

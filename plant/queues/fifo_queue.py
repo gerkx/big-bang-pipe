@@ -2,7 +2,7 @@ from queue import Queue
 from threading import Thread
 
 class FIFO_Queue:
-    def __init__(self, number_of_threads:int = 6):
+    def __init__(self, number_of_threads:int = 8):
         self.sync:bool = True    
         self._queue:object = Queue()
         self.number_of_threads:int = number_of_threads
