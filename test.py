@@ -1,32 +1,33 @@
 # from plant.pipe.fso.fso import create_FSO
-from plant.pipe.fso import create_FSO
+from plant.pipe import Pipe
+# from plant.pipe.pipe import Pipe
+# from plant.queues.fifo_queue import FIFO_Queue
+from plant.queues import Queue
 
 if __name__ == "__main__":
-    import asyncio
+    import asyncio, time
     # from plant.queues.async_queue import ASYNC_Queue
-    from plant.queues.fifo_queue import FIFO_Queue
-    queue = FIFO_Queue()
+
+    queues = Queue()
 
 
     from plant.fittings.test_fitting import Test_Fitting
     from plant.fittings.test_fitting2 import Test_Fitting2
+    fittings = [Test_Fitting]
+
+    watch = "F:\\tmp\\watch"
+    tubo = Pipe(watch, queues = queues, template = {}, fittings=fittings)
+
+    while True:
+        tubo.update()
+        time.sleep(1)
 
     
-    fittings = [Test_Fitting(queue)]
     # fittings = []
     
-    uno = "F:\\tmp\\uno"
-    dos = "F:\\tmp\\dos"
-    tres = "F:\\tmp\\tres"
-    boop = "F:\\tmp\\uno\\boop.mp4"
 
-    beep = create_FSO(uno, fittings, queue)
-    # zoop = create_FSO(dos, [Test_Fitting(queue)], queue)
-    # yarp = create_FSO(tres, [Test_Fitting(queue)], queue)
 
-    # print(f'{beep.name}\'s state is {beep.state}')
-    # print(f'{zoop.name}\'s state is {zoop.state}')
-    # print(f'{yarp.name}\'s state is {yarp.state}')
+
 
     # data = [
     #     [11.4, 3.56, 0.62],

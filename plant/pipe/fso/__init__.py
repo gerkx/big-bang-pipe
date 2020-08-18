@@ -1,1 +1,1 @@
-from .fso import create_FSO
+from .fso import create_FSO, FSO
