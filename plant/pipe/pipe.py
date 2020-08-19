@@ -8,10 +8,10 @@ from .fso import create_FSO, FSO
 
 
 class Pipe:
-    def __init__(self, dir:str, queues:object, template:dict, fittings:list, recurse:bool = False,):
+    def __init__(self, dir:str, queues:object, filters:list, fittings:list, recurse:bool = False,):
         self.directory:str = dir
         self.queues:object = queues
-        self.template:dict = template
+        self.filters:list = filters
         self.recurse:bool = recurse
         self._fittings:list = fittings
         self._contents:list = self.init_pipe_contents()
@@ -19,7 +19,7 @@ class Pipe:
         self.__lock:bool = False
 
     @property
-    def active(self):
+    def active(self) -> bool:
         return self.__active
 
     def activate(self):

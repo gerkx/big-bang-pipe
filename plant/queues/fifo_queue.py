@@ -7,7 +7,7 @@ class FIFO_Queue:
         self._queue:object = Queue()
         self.number_of_threads:int = number_of_threads
         self._threads:list = self.threaded_workers()
-        print(self._threads)
+        # print(self._threads)
 
     def worker(self):
         while True:

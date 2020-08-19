@@ -3,24 +3,36 @@ from plant.pipe import Pipe
 # from plant.pipe.pipe import Pipe
 # from plant.queues.fifo_queue import FIFO_Queue
 from plant.queues import Queue
+from plant.pipe.filters.filter import Filter
+
 
 if __name__ == "__main__":
-    import asyncio, time
-    # from plant.queues.async_queue import ASYNC_Queue
 
-    queues = Queue()
+    filter_str = '${prefix}_S${sea}E${epi}_SH${shot}'
+
+    test_name = 'monster_S6E45_SH0035'
+
+    fltr = Filter(filter_str)
+
+    print(fltr.match(test_name))
+    print(fltr.extract_vars(test_name))
+
+    # import asyncio, time
+    # # from plant.queues.async_queue import ASYNC_Queue
+
+    # queues = Queue()
 
 
-    from plant.fittings.test_fitting import Test_Fitting
-    from plant.fittings.test_fitting2 import Test_Fitting2
-    fittings = [Test_Fitting]
+    # from plant.fittings.test_fitting import Test_Fitting
+    # from plant.fittings.test_fitting2 import Test_Fitting2
+    # fittings = [Test_Fitting]
 
-    watch = "F:\\tmp\\watch"
-    tubo = Pipe(watch, queues = queues, template = {}, fittings=fittings)
+    # watch = "F:\\tmp\\watch"
+    # tubo = Pipe(watch, queues = queues, template = {}, fittings=fittings)
 
-    while True:
-        tubo.update()
-        time.sleep(1)
+    # while True:
+    #     tubo.update()
+    #     time.sleep(1)
 
     
     # fittings = []
