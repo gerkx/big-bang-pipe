@@ -1,15 +1,17 @@
-from typing import Callable
+from typing import Callable, Type
 
 from nanoid import generate
 
 from .fitting_state import Fitting_State
+
+from ...pipe.fso import FSO
 
 
 class Fitting:
     def __init__(self, queues:object):
         self.state:object = Fitting_State(self.broadcast)
         self.queue:object = queues.io
-        self.fso:object = None
+        self.fso:Type[FSO] = FSO
         # self.kwargs:dict = {**kwargs}
         self.guid:str = generate()
         self._subscribers:list = []
