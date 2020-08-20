@@ -67,7 +67,12 @@ class Pipe:
             return dir
     
     def init_pipe_contents(self) -> list:
-        fso_list = [self.filter(obj) for obj in self.pipe_contents()]
+        fso_list:list = []
+        for obj in self.pipe_contents():
+            props = self.filter(obj)
+            if props:
+                new_fso = self.create_fso(obj, props)
+                fso_list.append(new_fso)
         return fso_list
 
     def check_existing_pipe_contents(self):
@@ -79,27 +84,29 @@ class Pipe:
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
-                self.filter(obj)
+                props = self.filter(obj)
+                if props:
+                    new_fso = self.create_fso(obj, props)
+                    self._contents.append(new_fso)
 
     def filter(self, fso_path):
-        name = path.splitext(path.basename(fso_path))[0]
+        name:str = path.splitext(path.basename(fso_path))[0]
         if not any([filter.match(name) for filter in self.filters]):
             self.reject(fso_path)
         else:
             filtro = next(filter for filter in self.filters if filter.match(name))
-            extracted_vals = filtro.extract_vals(name)
-            print(f'{fso_path} is a match!')
-            return self.create_fso(fso_path, extracted_vals)
+            return filtro.extract_vals(name)
+
 
     
-    def create_fso(self, fso_path, extracted_vals):
+    def create_fso(self, fso_path, props):
         new_fso = create_FSO(
             fso_path,
             [fitting(self.queues) for fitting in self._fittings],
-            extracted_vals,
-            self.queues.fifo
+            props,
+            self.queues.io
         )
-        self._contents.append(new_fso)
+        # self._contents.append(new_fso)
         new_fso.subscribe(self.antenna)
         return new_fso
     

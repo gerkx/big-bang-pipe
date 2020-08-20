@@ -7,9 +7,20 @@ class FIFO_Queue:
         self._queue:object = Queue()
         self.number_of_threads:int = number_of_threads
         self._threads:list = self.threaded_workers()
-        # print(self._threads)
+        self.__active:bool = True
+
+    def activate(self):
+        self.__active = True
+
+    def deactivate(self):
+        self.__active = False
+
+    @property
+    def active(self) -> bool:
+        return self.__active
 
     def worker(self):
+        # while self.active:
         while True:
         # while not self._queue.empty():
             task = self._queue.get()

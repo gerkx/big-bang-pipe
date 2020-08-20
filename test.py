@@ -10,6 +10,24 @@ import time
 
 if __name__ == "__main__":
 
+    from box import Box
+
+    test_dict = {
+        'herp': "derp"
+    }
+
+    # box_test = Box(**test_dict)
+
+    # print(box_test.herp)
+    # box_test.herp = "yarp"
+    # print("=======")
+    # print(box_test.herp)
+    # print("=======")
+    # box_test.beep = "boop"
+    # print(box_test.beep)
+    # print("=======")
+    # print(box_test)
+
     filter_str = '${prefix}_S${sea}E${epi}_SH${shot}'
 
     test_name = 'monster_S6E45_SH0035'
@@ -26,16 +44,6 @@ if __name__ == "__main__":
 
     pipa = Pipe(watch, reject, queues, [fltr], fittings)
 
-    # print(fltr.match(test_name))
-    # print(fltr.extract_vars(test_name))
-
-    # import asyncio, time
-    # # from plant.queues.async_queue import ASYNC_Queue
-
-
-
-
-    # tubo = Pipe(watch, queues = queues, template = {}, fittings=fittings)
 
     while True:
         pipa.update()

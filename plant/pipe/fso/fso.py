@@ -1,8 +1,10 @@
 import os
 from os import path
 from typing import Type
+from types import SimpleNamespace
 
 from nanoid import generate
+from box import Box
 
 from .fso_state import FSO_State
 from .fso_availability import check_fso_availability
@@ -13,15 +15,14 @@ def create_FSO(path:str, fittings:list, vars:dict, fifo_queue:object):
     return fso
 
 class FSO:
-    def __init__(self, path:str, fittings:list, vars:dict):
+    def __init__(self, path:str, fittings:list, props:dict):
         self.state:Type[FSO_State] = FSO_State(fittings, self)
-        self.vars:dict = vars
+        self.props:dict = Box(props)
         self._subscribers:list = []
         self.__guid:str = generate()
         self.__path:str = path
         self.__locked:bool = False
 
-    
 
     def __del__(self):
         print(f'{self.filename} signing off!')
@@ -44,7 +45,6 @@ class FSO:
 
     def unlock(self):
         self.__locked = False
-
     
     @property
     def locked(self) -> bool:
@@ -109,3 +109,4 @@ class FSO:
     @property
     def guid(self):
         return self.__guid
+

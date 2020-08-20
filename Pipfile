@@ -12,6 +12,7 @@ uvicorn = "*"
 psutil = "*"
 imohash = "*"
 nanoid = "*"
+python-box = "*"
 
 [requires]
 python_version = "3.8"
