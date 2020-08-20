@@ -19,9 +19,12 @@ class Fitting:
         self.queue.add(self.main)
 
     def main(self):
-        self.state.process()
-        self.fitting()
-        self.state.finish()
+        if not self.fso.locked:
+            self.fso.lock()
+            self.state.process()
+            self.fitting()
+            self.state.finish()
+            self.fso.unlock()
 
     def subscribe(self, callback:Callable):
         if not callback in self._subscribers:

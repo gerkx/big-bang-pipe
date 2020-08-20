@@ -19,6 +19,7 @@ class FSO:
         self._subscribers:list = []
         self.__guid:str = generate()
         self.__path:str = path
+        self.__locked:bool = False
 
     
 
@@ -38,8 +39,17 @@ class FSO:
     def antenna(self, event):
         self.broadcast()
 
-    
+    def lock(self):
+        self.__locked = True
 
+    def unlock(self):
+        self.__locked = False
+
+    
+    @property
+    def locked(self) -> bool:
+        return self.__locked
+    
     # path property
     @property
     def path(self) -> str:

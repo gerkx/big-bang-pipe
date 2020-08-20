@@ -15,6 +15,7 @@ if __name__ == "__main__":
     test_name = 'monster_S6E45_SH0035'
 
     watch = "F:\\tmp\\watch"
+    reject = "F:\\tmp\\reject"
     queues = Queue()
 
     from plant.fittings.test_fitting import Test_Fitting
@@ -23,7 +24,7 @@ if __name__ == "__main__":
 
     fltr = Filter(filter_str)
 
-    pipa = Pipe(watch, queues, [fltr], fittings)
+    pipa = Pipe(watch, reject, queues, [fltr], fittings)
 
     # print(fltr.match(test_name))
     # print(fltr.extract_vars(test_name))

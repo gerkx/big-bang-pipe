@@ -9,12 +9,15 @@ from .fso import create_FSO, FSO
 
 class Pipe:
     def __init__(self, 
-        dir:str, queues:object, 
+        dir:str, 
+        reject_dir:str,
+        queues:object, 
         filters:list, 
         fittings:list, 
         recurse:bool = False,
     ):
         self.directory:str = dir
+        self.reject_directory:str = reject_dir
         self.queues:object = queues
         self.filters:list = filters
         self.recurse:bool = recurse
@@ -62,33 +65,21 @@ class Pipe:
                 for f in files:
                     dir.append(path.join(root, f))
             return dir
-
     
     def init_pipe_contents(self) -> list:
         fso_list = [self.filter(obj) for obj in self.pipe_contents()]
         return fso_list
 
     def check_existing_pipe_contents(self):
-        # rmv_q = []
         for fso in self._contents:
-            if not path.exists(fso.path):
-                # self._contents.remove(fso)
-                pass
-                
-            if str(fso.state) == 'FINISHED':
-                self.remove_fso(fso)
+            if not fso.locked:
+                if not path.exists(fso.path) or str(fso.state) == 'FINISHED':
+                    self.remove_fso(fso)
 
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
                 self.filter(obj)
-                # new_fso = create_FSO(
-                #     obj, 
-                #     [fitting(self.queues) for fitting in self._fittings], 
-                #     self.queues.fifo
-                # )
-                # self._contents.append(new_fso)
-                # new_fso.subscribe(self.antenna)
 
     def filter(self, fso_path):
         name = path.splitext(path.basename(fso_path))[0]
@@ -113,7 +104,9 @@ class Pipe:
         return new_fso
     
     def reject(self, fso_path):
+        reject_path = path.join(self.reject_directory, path.basename(fso_path))
         print(f'{fso_path} doesn\'t match any filter criterias!')
+        shutil.move(fso_path, reject_path)
 
     def remove_fso(self, fso):
         self._contents.remove(fso)
