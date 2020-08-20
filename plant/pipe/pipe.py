@@ -8,7 +8,12 @@ from .fso import create_FSO, FSO
 
 
 class Pipe:
-    def __init__(self, dir:str, queues:object, filters:list, fittings:list, recurse:bool = False,):
+    def __init__(self, 
+        dir:str, queues:object, 
+        filters:list, 
+        fittings:list, 
+        recurse:bool = False,
+    ):
         self.directory:str = dir
         self.queues:object = queues
         self.filters:list = filters
@@ -60,21 +65,15 @@ class Pipe:
 
     
     def init_pipe_contents(self) -> list:
-        fso_list = [
-            create_FSO(
-                obj, 
-                [fitting(self.queues) for fitting in self._fittings], 
-                self.queues.fifo) 
-                for obj in self.pipe_contents()
-        ]
-        [fso.subscribe(self.antenna) for fso in fso_list]
+        fso_list = [self.filter(obj) for obj in self.pipe_contents()]
         return fso_list
 
     def check_existing_pipe_contents(self):
         # rmv_q = []
         for fso in self._contents:
             if not path.exists(fso.path):
-                self._contents.remove(fso)
+                # self._contents.remove(fso)
+                pass
                 
             if str(fso.state) == 'FINISHED':
                 self.remove_fso(fso)
@@ -82,19 +81,41 @@ class Pipe:
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
-                new_fso = create_FSO(
-                    obj, 
-                    [fitting(self.queues) for fitting in self._fittings], 
-                    self.queues.fifo
-                )
-                self._contents.append(new_fso)
-                new_fso.subscribe(self.antenna)
+                self.filter(obj)
+                # new_fso = create_FSO(
+                #     obj, 
+                #     [fitting(self.queues) for fitting in self._fittings], 
+                #     self.queues.fifo
+                # )
+                # self._contents.append(new_fso)
+                # new_fso.subscribe(self.antenna)
 
-    def reject(self):
-        pass
+    def filter(self, fso_path):
+        name = path.splitext(path.basename(fso_path))[0]
+        if not any([filter.match(name) for filter in self.filters]):
+            self.reject(fso_path)
+        else:
+            filtro = next(filter for filter in self.filters if filter.match(name))
+            extracted_vals = filtro.extract_vals(name)
+            print(f'{fso_path} is a match!')
+            return self.create_fso(fso_path, extracted_vals)
+
+    
+    def create_fso(self, fso_path, extracted_vals):
+        new_fso = create_FSO(
+            fso_path,
+            [fitting(self.queues) for fitting in self._fittings],
+            extracted_vals,
+            self.queues.fifo
+        )
+        self._contents.append(new_fso)
+        new_fso.subscribe(self.antenna)
+        return new_fso
+    
+    def reject(self, fso_path):
+        print(f'{fso_path} doesn\'t match any filter criterias!')
 
     def remove_fso(self, fso):
-        # print('zeeeeoooooo')
         self._contents.remove(fso)
         if fso.directory == self.directory:
             shutil.rmtree(fso.path) if path.isdir(fso.path) else os.remove(fso.path)

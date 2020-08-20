@@ -11,7 +11,7 @@ class Filter:
     def match(self, name):
         return False if not self.run_re(name) else True
 
-    def extract_vars(self, name) -> dict:
+    def extract_vals(self, name) -> dict:
         if not self.match(name):
             return None
         else:

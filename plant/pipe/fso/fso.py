@@ -7,14 +7,15 @@ from nanoid import generate
 from .fso_state import FSO_State
 from .fso_availability import check_fso_availability
 
-def create_FSO(path:str, fittings:list, fifo_queue:object):
-    fso = FSO(path, fittings)
+def create_FSO(path:str, fittings:list, vars:dict, fifo_queue:object):
+    fso = FSO(path, fittings, vars)
     fifo_queue.add(fso.available)
     return fso
 
 class FSO:
-    def __init__(self, path:str, fittings:list):
+    def __init__(self, path:str, fittings:list, vars:dict):
         self.state:Type[FSO_State] = FSO_State(fittings, self)
+        self.vars:dict = vars
         self._subscribers:list = []
         self.__guid:str = generate()
         self.__path:str = path

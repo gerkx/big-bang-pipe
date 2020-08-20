@@ -5,6 +5,8 @@ from plant.pipe import Pipe
 from plant.queues import Queue
 from plant.pipe.filters.filter import Filter
 
+import time
+
 
 if __name__ == "__main__":
 
@@ -12,27 +14,31 @@ if __name__ == "__main__":
 
     test_name = 'monster_S6E45_SH0035'
 
+    watch = "F:\\tmp\\watch"
+    queues = Queue()
+
+    from plant.fittings.test_fitting import Test_Fitting
+    from plant.fittings.test_fitting2 import Test_Fitting2
+    fittings = [Test_Fitting]
+
     fltr = Filter(filter_str)
 
-    print(fltr.match(test_name))
-    print(fltr.extract_vars(test_name))
+    pipa = Pipe(watch, queues, [fltr], fittings)
+
+    # print(fltr.match(test_name))
+    # print(fltr.extract_vars(test_name))
 
     # import asyncio, time
     # # from plant.queues.async_queue import ASYNC_Queue
 
-    # queues = Queue()
 
 
-    # from plant.fittings.test_fitting import Test_Fitting
-    # from plant.fittings.test_fitting2 import Test_Fitting2
-    # fittings = [Test_Fitting]
 
-    # watch = "F:\\tmp\\watch"
     # tubo = Pipe(watch, queues = queues, template = {}, fittings=fittings)
 
-    # while True:
-    #     tubo.update()
-    #     time.sleep(1)
+    while True:
+        pipa.update()
+        time.sleep(1)
 
     
     # fittings = []
