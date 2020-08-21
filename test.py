@@ -1,56 +1,75 @@
 # from plant.pipe.fso.fso import create_FSO
 from plant.pipe import Pipe
+from plant.pipe.pipe_utils import init_Pipe
 # from plant.pipe.pipe import Pipe
 # from plant.queues.fifo_queue import FIFO_Queue
 from plant.queues import Queue
 from plant.pipe.filters.filter import Filter
 
 import time
-
+from box import Box
 
 if __name__ == "__main__":
+    from plant.pipe.fittings.test_fitting import Test_Fitting
+    from plant.pipe.fittings.test_fitting2 import Test_Fitting2
+    queues = Queue()
 
-    from box import Box
-
-    test_dict = {
-        'herp': "derp"
-    }
-
-    # box_test = Box(**test_dict)
-
-    # print(box_test.herp)
-    # box_test.herp = "yarp"
-    # print("=======")
-    # print(box_test.herp)
-    # print("=======")
-    # box_test.beep = "boop"
-    # print(box_test.beep)
-    # print("=======")
-    # print(box_test)
-
-    filter_str = '${prefix}_S${sea}E${epi}_SH${shot}'
-
-    test_name = 'monster_S6E45_SH0035'
+    class_str = "Test_Fitting"
 
     watch = "F:\\tmp\\watch"
     reject = "F:\\tmp\\reject"
-    queues = Queue()
 
-    from plant.fittings.test_fitting import Test_Fitting
-    from plant.fittings.test_fitting2 import Test_Fitting2
-    fittings = [Test_Fitting]
+        
+    print(globals()['Test_Fitting'])
 
-    fltr = Filter(filter_str)
+    config = {
+        'dir' : watch,
+        'reject_dir' : reject,
+        'fittings' : ['Test_Fitting'],
+        'filters' : ['${prefix}_S${sea}E${epi}_SH${shot}']
+    }
 
-    pipa = Pipe(watch, reject, queues, [fltr], fittings)
+    pipes = [init_Pipe(queues, **config)]
+    try:
+        while True:
+            for pipe in pipes:
+                pipe.update()
+            time.sleep(1)
+    except KeyboardInterrupt:
+        queues.io.deactivate()
+    # print(instance)
+
+    # time.sleep(2)
+    # # queues.io.deactivate()
+    # print('lllll')
+
+    # time.sleep(2)
+    # queues.io.deactivate()
+    # print('zzzzzzzzzzzzzzzzzzzzzz')
+    # filter_str = '${prefix}_S${sea}E${epi}_SH${shot}'
+
+    # test_name = 'monster_S6E45_SH0035'
 
 
-    while True:
-        pipa.update()
-        time.sleep(1)
+    # fittings = [Test_Fitting]
 
+    # fltr = Filter(filter_str)
+
+    # pipa = Pipe(watch, reject, queues, [fltr], fittings)
+
+    # while True:
+    #         pipa.update()
+    #         time.sleep(1)
+
+    # try:
+    #     while True:
+    #         pipa.update()
+    #         time.sleep(1)
+
+    # except KeyboardInterrupt:
+    #     queues.io.deactivate()
     
-    # fittings = []
+
     
 
 

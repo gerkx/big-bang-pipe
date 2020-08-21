@@ -1,18 +1,25 @@
 from queue import Queue
-from threading import Thread
+from threading import Thread, Event
+import time
 
 class FIFO_Queue:
     def __init__(self, number_of_threads:int = 8):
-        self.sync:bool = True    
+        self.__active = True
         self._queue:object = Queue()
         self.number_of_threads:int = number_of_threads
         self._threads:list = self.threaded_workers()
-        self.__active:bool = True
+
 
     def activate(self):
-        self.__active = True
+        if not self.active:
+            self._threads = self.threaded_workers()
+            self.__active = True
 
     def deactivate(self):
+        for _ in self._threads:
+            self.add(None)
+        for thread in self._threads:
+            thread.join()
         self.__active = False
 
     @property
@@ -20,18 +27,12 @@ class FIFO_Queue:
         return self.__active
 
     def worker(self):
-        # while self.active:
         while True:
-        # while not self._queue.empty():
             task = self._queue.get()
+            if task is None:
+                break
             task()
             self._queue.task_done()
-
-    def spawn(self):
-        if len(self._threads) < self.number_of_threads:
-            thread = Thread(target=self.worker)
-            thread.start()
-            self._threads.append(thread.native_id)
 
     def threaded_workers(self):
         thread_ids = []
@@ -39,12 +40,9 @@ class FIFO_Queue:
             thread = Thread(target=self.worker)
             # thread.daemon = True
             thread.start()
-            thread_ids.append(thread.native_id)
+            thread_ids.append(thread)
         return thread_ids
 
     def add(self, *tasks):
         for task in tasks:
             self._queue.put_nowait(task)
-            # self.spawn()
-            # print(self._threads)
-            # print(self._queue.qsize())

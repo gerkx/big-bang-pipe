@@ -4,7 +4,7 @@ from nanoid import generate
 
 from .fitting_state import Fitting_State
 
-from ...pipe.fso import FSO
+from ...fso import FSO
 
 
 class Fitting:

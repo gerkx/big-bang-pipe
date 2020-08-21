@@ -1,15 +1,30 @@
 import time
+from threading import Thread
 
 class Plant:
-    def __init__(self, pipe_list:list, poll_freq:int = 1):
+    def __init__(self, 
+        pipe_list:list, 
+        poll_freq:float = 1.0, 
+        number_of_threads:int = 1
+    ):
         self.pipes = pipe_list
         self._frequency = poll_freq
+        self.number_of_threads = number_of_threads
         self.__active = True
+        self._threads:list = self.threaded_poll
 
-    async def poll(self):
+    def threaded_poll(self):
+        thread_ids = []
+        for _ in range(self.number_of_threads):
+            thread = Thread(target=self.poll)
+            thread.start()
+            thread_ids.append(thread.native_id)
+        return thread_ids
+
+    def poll(self):
         while self.__active:
             for pipe in self.pipes:
-                pipe.poll()
+                pipe.update()
             time.sleep(self._frequency)
 
     @property
@@ -24,7 +39,9 @@ class Plant:
     def active(self):
         return self.__active
 
-    @active.setter
-    def active(self, val):
-        self.__active = val
+    def activate(self):
+        self.__active = True
+    
+    def deactivate(self):
+        self.__active = False
 

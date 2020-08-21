@@ -1,8 +1,6 @@
 import os, shutil
 import os.path as path
 
-import gc
-# from threading import Thread
 
 from .fso import create_FSO, FSO
 
