@@ -21,6 +21,11 @@ class Plant:
 
         self.start()
 
+    def antenna(self, guid):
+        # pipe = next(pipe for pipe in self.pipes if pipe.guid == guid)
+        # print(self.pipe_summary(pipe))
+        print(self.summary())
+
     def start(self):
         try:
             while True:
@@ -29,7 +34,7 @@ class Plant:
             self.deactivate()
 
     def init_pipes(self, queues:Type[Queue], pipe_configs:List[dict]) -> List[dict]:
-        return [init_Pipe(queues, **config) for config in pipe_configs]
+        return [init_Pipe(queues, self.antenna, **config) for config in pipe_configs]
     
     def threaded_poll(self):
         threads = []
@@ -62,10 +67,27 @@ class Plant:
     def activate(self):
         self.__shutdown.clear()
 
-    
     def deactivate(self):
         self.__shutdown.set()
         for thread in self._threads:
             thread.join()
         self.queues.io.deactivate()
+
+    @staticmethod
+    def pipe_summary(pipe) -> dict:
+        return {
+            'name': pipe.name,
+            'guid': pipe.guid,
+            'contents': [{
+                'filename': fso.filename,
+                'guid': fso.guid,
+                'state': fso.state.summary
+            } for fso in pipe.contents]
+        }
+    
+    def summary(self) -> list:
+        return [self.pipe_summary(pipe) for pipe in self.pipes]
+
+            
+
 

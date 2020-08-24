@@ -25,6 +25,7 @@ if __name__ == "__main__":
     # print(globals()['Test_Fitting'])
 
     config = [{
+        'name': 'test_pipe',
         'dir' : watch,
         'reject_dir' : reject,
         'fittings' : ['Test_Fitting'],

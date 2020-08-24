@@ -1,12 +1,14 @@
 import os, shutil
 import os.path as path
 
+from nanoid import generate
 
 from .fso import create_FSO, FSO
 
 
 class Pipe:
-    def __init__(self, 
+    def __init__(self,
+        name:str,
         dir:str, 
         reject_dir:str,
         queues:object, 
@@ -14,6 +16,9 @@ class Pipe:
         fittings:list, 
         recurse:bool = False,
     ):
+        self.name:str = name
+        self._subscribers:list = []
+        self.__guid:str = generate()
         self.directory:str = dir
         self.reject_directory:str = reject_dir
         self.queues:object = queues
@@ -24,6 +29,21 @@ class Pipe:
         self.__active:bool = True
         self.__lock:bool = False
 
+    def subscribe(self, callback):
+        self._subscribers.append(callback)
+
+    def broadcast(self):
+        for callback in self._subscribers:
+            callback(self.__guid)
+
+    @property
+    def contents(self):
+        return self._contents
+    
+    @property
+    def guid(self):
+        return self.__guid
+    
     @property
     def active(self) -> bool:
         return self.__active
@@ -46,12 +66,13 @@ class Pipe:
         self.__lock = True
         fso = next(obj for obj in self._contents if obj.guid == guid)
         fso_state = str(fso.state)
-        print('-+'*10)
-        print(f'pipe says that {fso.name} is {fso.state.summary}')
-        print('-+'*10)
+        # print('-+'*10)
+        # print(f'pipe says that {fso.name} is {fso.state.summary}')
+        # print('-+'*10)
         if fso_state == 'FINISHED':
             self.remove_fso(fso)
         self.__lock = False
+        self.broadcast()
 
 
     def pipe_contents(self) -> list:
@@ -71,6 +92,7 @@ class Pipe:
             if props:
                 new_fso = self.create_fso(obj, props)
                 fso_list.append(new_fso)
+                self.broadcast()
         return fso_list
 
     def check_existing_pipe_contents(self):
@@ -78,6 +100,7 @@ class Pipe:
             if not fso.locked:
                 if not path.exists(fso.path) or str(fso.state) == 'FINISHED':
                     self.remove_fso(fso)
+                    self.broadcast()
 
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
@@ -86,6 +109,7 @@ class Pipe:
                 if props:
                     new_fso = self.create_fso(obj, props)
                     self._contents.append(new_fso)
+                    self.broadcast()
 
     def filter(self, fso_path):
         name:str = path.splitext(path.basename(fso_path))[0]
