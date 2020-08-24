@@ -2,22 +2,22 @@ import time
 from typing import List, Type
 from threading import Event, Thread
 
-from .pipe import init_Pipe
+from .pipe import init_Pipe, Pipe
 from .queues import Queue
 
 class Plant:
     def __init__(self,
         queues: Type[Queue],
         pipe_configs:List[dict], 
-        poll_freq:float = 1., 
+        poll_freq:float = 1.0, 
         number_of_threads:int = 1
     ):
-        self.pipes = self.init_pipes(queues, pipe_configs)
+        self.pipes:List[Pipe] = self.init_pipes(queues, pipe_configs)
         self.queues:Type[Queue] = queues
-        self._frequency = poll_freq
-        self.number_of_threads = number_of_threads
-        self.__shutdown = Event()
-        self._threads:list = self.threaded_poll()
+        self._frequency:float = poll_freq
+        self.number_of_threads:int = number_of_threads
+        self.__shutdown:Type[Event] = Event()
+        self._threads:List[Thread] = self.threaded_poll()
 
         self.start()
 

@@ -20,7 +20,6 @@ class FIFO_Queue:
             self.add(None)
         for thread in self._threads:
             thread.join()
-        print("no mas")
         self.__active = False
 
     @property
