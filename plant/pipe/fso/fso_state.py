@@ -47,12 +47,10 @@ class FSO_State:
             else:
                 self.limbo()
                 self.broadcast('fitting finished')
-                print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                 self.advance_fitting()
         
         # handle fitting processing
         if fitting_state == 'PROCESSING':
-            print('itsa process')
             self.process()
             self.broadcast('set state to processing')
 

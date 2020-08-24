@@ -1,6 +1,7 @@
 from typing import Callable, Type
 
 from nanoid import generate
+from box import Box
 
 from .fitting_state import Fitting_State
 
@@ -12,7 +13,6 @@ class Fitting:
         self.state:object = Fitting_State(self.broadcast)
         self.queue:object = queues.io
         self.fso:Type[FSO] = FSO
-        # self.kwargs:dict = {**kwargs}
         self.guid:str = generate()
         self._subscribers:list = []
 
@@ -40,7 +40,7 @@ class Fitting:
             callback()
 
     def fitting(self):
-        print("overwrite this method with fitting method")
+        print("overwrite the fitting method with your own instructions!")
 
 
 class Async_Fitting(Fitting):

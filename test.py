@@ -28,8 +28,9 @@ if __name__ == "__main__":
         'name': 'test_pipe',
         'dir' : watch,
         'reject_dir' : reject,
-        'fittings' : ['Test_Fitting'],
-        'filters' : ['${prefix}_S${sea}E${epi}_SH${shot}']
+        'fittings' : ['Test_Fitting', 'Test_Fitting2'],
+        'filters' : ['${prefix}_S${sea}E${epi}_SH${shot}'],
+        'props': {'base_dir': "F:\\tmp\\dos"}
     }]
 
     plant = Plant(queues, config)

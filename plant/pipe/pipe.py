@@ -14,6 +14,7 @@ class Pipe:
         queues:object, 
         filters:list, 
         fittings:list, 
+        props:dict,
         recurse:bool = False,
     ):
         self.name:str = name
@@ -25,7 +26,7 @@ class Pipe:
         self.filters:list = filters
         self.recurse:bool = recurse
         self._fittings:list = fittings
-        self._contents:list = self.init_pipe_contents()
+        self._contents:list = self.init_pipe_contents(props)
         self.__active:bool = True
         self.__lock:bool = False
 
@@ -71,8 +72,8 @@ class Pipe:
         # print('-+'*10)
         if fso_state == 'FINISHED':
             self.remove_fso(fso)
-        self.__lock = False
         self.broadcast()
+        self.__lock = False
 
 
     def pipe_contents(self) -> list:
@@ -85,10 +86,10 @@ class Pipe:
                     dir.append(path.join(root, f))
             return dir
     
-    def init_pipe_contents(self) -> list:
+    def init_pipe_contents(self, props) -> list:
         fso_list:list = []
         for obj in self.pipe_contents():
-            props = self.filter(obj)
+            props = {**props, **self.filter(obj)}
             if props:
                 new_fso = self.create_fso(obj, props)
                 fso_list.append(new_fso)
@@ -139,6 +140,6 @@ class Pipe:
 
     def remove_fso(self, fso):
         self._contents.remove(fso)
-        if fso.directory == self.directory:
+        if fso.directory == self.directory and path.exists(fso.path):
             shutil.rmtree(fso.path) if path.isdir(fso.path) else os.remove(fso.path)
 
