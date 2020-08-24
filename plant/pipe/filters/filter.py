@@ -67,11 +67,11 @@ class Filter:
         max_len = opts['max_length'] - 1 if 'max_length' in opts else ''
         
         if tipo == 'alpha_numeric':
-            pattern = '\w'
+            pattern = r'\w'
         elif tipo == 'alpha':
-            pattern = '\w[^0-9]'
+            pattern = r'\w[^0-9]'
         else:
-            pattern = '\d'
+            pattern = r'\d'
             min_len = opts['min_length'] if 'min_length' in opts else ''
             max_len = opts['max_length'] if 'max_length' in opts else ''
         
