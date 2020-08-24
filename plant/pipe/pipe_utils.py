@@ -2,7 +2,7 @@ from box import Box
 
 from .filters import Filter
 from .pipe import Pipe
-from .fittings.test_fitting import Test_Fitting
+from .fittings import *
 
 def call_fitting(fitting:str):
     return globals()[fitting]

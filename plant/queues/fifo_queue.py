@@ -20,6 +20,7 @@ class FIFO_Queue:
             self.add(None)
         for thread in self._threads:
             thread.join()
+        print("no mas")
         self.__active = False
 
     @property
@@ -35,13 +36,13 @@ class FIFO_Queue:
             self._queue.task_done()
 
     def threaded_workers(self):
-        thread_ids = []
+        threads = []
         for _ in range(self.number_of_threads):
             thread = Thread(target=self.worker)
             # thread.daemon = True
             thread.start()
-            thread_ids.append(thread)
-        return thread_ids
+            threads.append(thread)
+        return threads
 
     def add(self, *tasks):
         for task in tasks:

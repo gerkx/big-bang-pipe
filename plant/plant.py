@@ -1,28 +1,48 @@
 import time
-from threading import Thread
+from typing import List, Type
+from threading import Event, Thread
+
+from .pipe import init_Pipe
+from .queues import Queue
 
 class Plant:
-    def __init__(self, 
-        pipe_list:list, 
-        poll_freq:float = 1.0, 
+    def __init__(self,
+        queues: Type[Queue],
+        pipe_configs:List[dict], 
+        poll_freq:float = 1., 
         number_of_threads:int = 1
     ):
-        self.pipes = pipe_list
+        self.pipes = self.init_pipes(queues, pipe_configs)
+        self.queues:Type[Queue] = queues
         self._frequency = poll_freq
         self.number_of_threads = number_of_threads
-        self.__active = True
-        self._threads:list = self.threaded_poll
+        self.__shutdown = Event()
+        self._threads:list = self.threaded_poll()
 
+        self.start()
+
+    def start(self):
+        try:
+            while True:
+                pass
+        except KeyboardInterrupt:
+            self.deactivate()
+
+    def init_pipes(self, queues:Type[Queue], pipe_configs:List[dict]) -> List[dict]:
+        return [init_Pipe(queues, **config) for config in pipe_configs]
+    
     def threaded_poll(self):
-        thread_ids = []
+        threads = []
         for _ in range(self.number_of_threads):
             thread = Thread(target=self.poll)
             thread.start()
-            thread_ids.append(thread.native_id)
-        return thread_ids
+            threads.append(thread)
+        return threads
 
     def poll(self):
-        while self.__active:
+        while True:
+            if self.__shutdown.is_set():
+                break
             for pipe in self.pipes:
                 pipe.update()
             time.sleep(self._frequency)
@@ -37,11 +57,15 @@ class Plant:
 
     @property
     def active(self):
-        return self.__active
+        return False if self.__shutdown.is_set() else True
 
     def activate(self):
-        self.__active = True
+        self.__shutdown.clear()
+
     
     def deactivate(self):
-        self.__active = False
+        self.__shutdown.set()
+        for thread in self._threads:
+            thread.join()
+        self.queues.io.deactivate()
 

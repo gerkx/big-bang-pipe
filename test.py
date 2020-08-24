@@ -6,6 +6,8 @@ from plant.pipe.pipe_utils import init_Pipe
 from plant.queues import Queue
 from plant.pipe.filters.filter import Filter
 
+from plant import Plant
+
 import time
 from box import Box
 
@@ -20,57 +22,25 @@ if __name__ == "__main__":
     reject = "F:\\tmp\\reject"
 
         
-    print(globals()['Test_Fitting'])
+    # print(globals()['Test_Fitting'])
 
-    config = {
+    config = [{
         'dir' : watch,
         'reject_dir' : reject,
         'fittings' : ['Test_Fitting'],
         'filters' : ['${prefix}_S${sea}E${epi}_SH${shot}']
-    }
+    }]
 
-    pipes = [init_Pipe(queues, **config)]
-    try:
-        while True:
-            for pipe in pipes:
-                pipe.update()
-            time.sleep(1)
-    except KeyboardInterrupt:
-        queues.io.deactivate()
-    # print(instance)
+    plant = Plant(queues, config)
 
-    # time.sleep(2)
-    # # queues.io.deactivate()
-    # print('lllll')
-
-    # time.sleep(2)
-    # queues.io.deactivate()
-    # print('zzzzzzzzzzzzzzzzzzzzzz')
-    # filter_str = '${prefix}_S${sea}E${epi}_SH${shot}'
-
-    # test_name = 'monster_S6E45_SH0035'
-
-
-    # fittings = [Test_Fitting]
-
-    # fltr = Filter(filter_str)
-
-    # pipa = Pipe(watch, reject, queues, [fltr], fittings)
-
-    # while True:
-    #         pipa.update()
-    #         time.sleep(1)
-
+    # pipes = [init_Pipe(queues, **config)]
     # try:
     #     while True:
-    #         pipa.update()
+    #         for pipe in pipes:
+    #             pipe.update()
     #         time.sleep(1)
-
     # except KeyboardInterrupt:
     #     queues.io.deactivate()
-    
-
-    
 
 
 
