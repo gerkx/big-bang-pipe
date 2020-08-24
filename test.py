@@ -21,7 +21,54 @@ if __name__ == "__main__":
     watch = "F:\\tmp\\watch"
     reject = "F:\\tmp\\reject"
 
-        
+    
+    filtro = {
+        'template': '${prefix}_S${sea}E${epi}_SQ${seq}_SH${shot}_INT${frame}',
+        'definitions': {
+            'prefix': {
+                'type': 'alpha_numeric',
+                'options': {
+                    "min_length": 1
+                }
+            },
+            'sea': {
+                'type': 'numeric',
+                'options': {
+                    "min_length": 1,
+                    "max_length": 5
+                }
+            },
+            'epi': {
+                'type': 'numeric',
+                'options': {
+                    "min_length": 1,
+                    "max_length": 5
+                }
+            },
+            'seq': {
+                'type': 'numeric',
+                'options': {
+                    "min_length": 1,
+                    "max_length": 5
+                }
+            },
+            'shot': {
+                'type': 'numeric',
+                'options': {
+                    "min_length": 1,
+                    "max_length": 5
+                }
+            },
+            'frame': {
+                'type': 'numeric',
+                'options': {
+                    "min_length": 1,
+                    "max_length": 5
+                }
+            },
+        }
+    }
+
     # print(globals()['Test_Fitting'])
 
     config = [{
@@ -29,7 +76,7 @@ if __name__ == "__main__":
         'dir' : watch,
         'reject_dir' : reject,
         'fittings' : ['Test_Fitting', 'Test_Fitting2'],
-        'filters' : ['${prefix}_S${sea}E${epi}_SH${shot}'],
+        'filters' : [filtro],
         'props': {'base_dir': "F:\\tmp\\dos"}
     }]
 

@@ -1,10 +1,13 @@
 import re
 from itertools import zip_longest
 from string import Template
+from typing import Type
+
 
 class Filter:
-    def __init__(self, template: str):
-       self.template:str =  template
+    def __init__(self, template: dict):
+       self.template:str =  template['template']
+       self.definitions:dict = template['definitions']
        self.slice_idxs = self.create_slice_idxs()
 
 
@@ -57,9 +60,26 @@ class Filter:
         ]
 
     def create_subpattern(self, key:str) -> str:
-        pattern = '\w+'
+        tipo = self.definitions[key]['type']
+        opts = self.definitions[key]['options']
+
+        min_len = opts['min_length'] - 1 if 'min_length' in opts else ''
+        max_len = opts['max_length'] - 1 if 'max_length' in opts else ''
+        
+        if tipo == 'alpha_numeric':
+            pattern = '\w'
+        elif tipo == 'alpha':
+            pattern = '\w[^0-9]'
+        else:
+            pattern = '\d'
+            min_len = opts['min_length'] if 'min_length' in opts else ''
+            max_len = opts['max_length'] if 'max_length' in opts else ''
+        
         if self.template.startswith('${' + key + '}'):
             pattern = '^' + pattern
+
+        pattern += "{" + str(min_len) + "," + str(max_len) + "}"
+        
         if self.template.endswith('${' + key + '}'):
             pattern += '$'
         return pattern

@@ -18,6 +18,7 @@ class Pipe:
         recurse:bool = False,
     ):
         self.name:str = name
+        self.__props:dict = props
         self._subscribers:list = []
         self.__guid:str = generate()
         self.directory:str = dir
@@ -26,7 +27,7 @@ class Pipe:
         self.filters:list = filters
         self.recurse:bool = recurse
         self._fittings:list = fittings
-        self._contents:list = self.init_pipe_contents(props)
+        self._contents:list = self.init_pipe_contents()
         self.__active:bool = True
         self.__lock:bool = False
 
@@ -86,10 +87,10 @@ class Pipe:
                     dir.append(path.join(root, f))
             return dir
     
-    def init_pipe_contents(self, props) -> list:
+    def init_pipe_contents(self) -> list:
         fso_list:list = []
         for obj in self.pipe_contents():
-            props = {**props, **self.filter(obj)}
+            props = {**self.__props, **self.filter(obj)}
             if props:
                 new_fso = self.create_fso(obj, props)
                 fso_list.append(new_fso)
@@ -106,7 +107,7 @@ class Pipe:
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
-                props = self.filter(obj)
+                props = {**self.__props, **self.filter(obj)}
                 if props:
                     new_fso = self.create_fso(obj, props)
                     self._contents.append(new_fso)
