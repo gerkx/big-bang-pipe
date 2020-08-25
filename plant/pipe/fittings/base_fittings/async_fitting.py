@@ -3,7 +3,6 @@ from random import random
 from typing import Callable, Type, List
 
 from nanoid import generate
-from box import Box
 
 from .fitting_state import Fitting_State
 from ...fso import FSO

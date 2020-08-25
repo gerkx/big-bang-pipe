@@ -123,10 +123,10 @@ class Pipe:
             filtro = next(filter for filter in self.filters if filter.match(name))
             return filtro.extract_vals(name)
 
-
-    
     def create_fso(self, fso_path, props):
         fittings = []
+        # if it's a normal Fitting, need to give it a queue
+        # otherwise it just needs to be instantiated
         for fitting in self._fittings:
             if isinstance(fitting, Fitting):
                 fittings.append(fitting(self.queues))
@@ -139,7 +139,6 @@ class Pipe:
             props,
             self.queues.io
         )
-        # self._contents.append(new_fso)
         new_fso.subscribe(self.antenna)
         return new_fso
     
