@@ -8,3 +8,4 @@
 
 from .test_fitting import Test_Fitting
 from .test_fitting2 import Test_Fitting2
+from .base_fittings.async_fitting import Async_Fitting

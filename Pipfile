@@ -13,6 +13,8 @@ psutil = "*"
 imohash = "*"
 nanoid = "*"
 python-box = "*"
+httpx = "*"
+nest-asyncio = "*"
 
 [requires]
 python_version = "3.8"

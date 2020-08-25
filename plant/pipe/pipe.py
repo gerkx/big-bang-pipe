@@ -5,6 +5,8 @@ from nanoid import generate
 
 from .fso import create_FSO, FSO
 
+from .fittings.base_fittings.fittings import Fitting
+
 
 class Pipe:
     def __init__(self,
@@ -124,9 +126,16 @@ class Pipe:
 
     
     def create_fso(self, fso_path, props):
+        fittings = []
+        for fitting in self._fittings:
+            if isinstance(fitting, Fitting):
+                fittings.append(fitting(self.queues))
+            else:
+                fittings.append(fitting())
+            
         new_fso = create_FSO(
             fso_path,
-            [fitting(self.queues) for fitting in self._fittings],
+            fittings,
             props,
             self.queues.io
         )

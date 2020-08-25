@@ -19,7 +19,7 @@ class Plant:
         self.__shutdown:Type[Event] = Event()
         self._threads:List[Thread] = self.threaded_poll()
 
-        self.start()
+        # self.start()
 
     def antenna(self, guid):
         # pipe = next(pipe for pipe in self.pipes if pipe.guid == guid)
@@ -31,6 +31,7 @@ class Plant:
             while True:
                 pass
         except KeyboardInterrupt:
+            print('signing off')
             self.deactivate()
 
     def init_pipes(self, queues:Type[Queue], pipe_configs:List[dict]) -> List[dict]:

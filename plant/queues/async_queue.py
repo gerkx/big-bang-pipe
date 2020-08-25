@@ -1,9 +1,9 @@
 import asyncio, time
 
 class ASYNC_Queue: 
-    def __init__(self):
-        self.sync:bool = False
-        self.loop = asyncio.get_event_loop()
+    def __init__(self, loop):
+        # self.sync:bool = False
+        self.loop = loop
         self.queue = asyncio.Queue()
         # self.tasks: list = []
 
@@ -11,7 +11,7 @@ class ASYNC_Queue:
         while not self.queue.empty():
         # while True:
             task = await self.queue.get()
-            task()
+            await task()
             # obj, task = await self.queue.get()
             # await getattr(obj, task)()
             self.queue.task_done()
@@ -21,9 +21,16 @@ class ASYNC_Queue:
         tasklist: list = []
         for task in tasks:
             self.queue.put_nowait(task)
-            tasklist.append(self.loop.create_task(await self.async_worker()))
-        self.loop.run_until_complete(asyncio.gather(*tasklist))
+            tasklist.append(asyncio.create_task(self.async_worker()))
+            self.loop.run_until_complete(tasklist)
+        # asyncio.run(asyncio.gather(*tasklist))
+        # try:
+        #     loop = asyncio.get_running_loop()
+        # except RuntimeError:
+        #     loop = None
 
-    
+        # if loop and loop.is_running():
+        # else:
+        #     asyncio.run(tasklist)
 
     
