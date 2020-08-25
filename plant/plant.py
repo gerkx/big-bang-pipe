@@ -2,6 +2,8 @@ import time
 from typing import List, Type
 from threading import Event, Thread
 
+from httpx import AsyncClient
+
 from .pipe import init_Pipe, Pipe
 from .queues import Queue
 
@@ -12,6 +14,7 @@ class Plant:
         poll_freq:float = 1.0, 
         number_of_threads:int = 1
     ):
+        self.client = AsyncClient()
         self.pipes:List[Pipe] = self.init_pipes(queues, pipe_configs)
         self.queues:Type[Queue] = queues
         self._frequency:float = poll_freq
@@ -35,7 +38,7 @@ class Plant:
             self.deactivate()
 
     def init_pipes(self, queues:Type[Queue], pipe_configs:List[dict]) -> List[dict]:
-        return [init_Pipe(queues, self.antenna, **config) for config in pipe_configs]
+        return [init_Pipe(queues, self.client, self.antenna, **config) for config in pipe_configs]
     
     def threaded_poll(self):
         threads = []

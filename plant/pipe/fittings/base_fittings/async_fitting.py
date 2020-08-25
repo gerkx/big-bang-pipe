@@ -2,6 +2,7 @@ import asyncio
 from random import random
 from typing import Callable, Type, List
 
+from httpx import AsyncClient
 from nanoid import generate
 
 from .fitting_state import Fitting_State
@@ -9,11 +10,13 @@ from ...fso import FSO
 
 
 class Async_Fitting:
-    def __init__(self):
+    def __init__(self, client:Type[AsyncClient]):
         self.state:Type[Fitting_State] = Fitting_State(self.broadcast)
         self.fso:Type[FSO] = FSO
         self.__guid:str = generate()
         self._subscribers:List[Callable] = []
+        self.client:Type[AsyncClient] = client
+
 
     def enqueue(self):
         self.state.enqueue()
@@ -38,9 +41,7 @@ class Async_Fitting:
         if not self.fso.locked:
             self.fso.lock()
             self.state.process()
-            print(f'guid {self.guid} awaiting fitting')
             await self.fitting()
-            print('finished!')
             self.state.finish()
 
     async def fitting(self):

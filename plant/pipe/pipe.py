@@ -1,19 +1,22 @@
 import os, shutil
 import os.path as path
+from typing import Type
+
+from httpx import AsyncClient
 
 from nanoid import generate
 
 from .fso import create_FSO, FSO
 
-from .fittings.base_fittings.fittings import IO_Fitting
-
+from .fittings.base_fittings import Async_Fitting
 
 class Pipe:
     def __init__(self,
         name:str,
         dir:str, 
         reject_dir:str,
-        queues:object, 
+        queues:object,
+        client:Type[AsyncClient], 
         filters:list, 
         fittings:list, 
         props:dict,
@@ -26,6 +29,7 @@ class Pipe:
         self.directory:str = dir
         self.reject_directory:str = reject_dir
         self.queues:object = queues
+        self.client:Type[AsyncClient] = client
         self.filters:list = filters
         self.recurse:bool = recurse
         self._fittings:list = fittings
@@ -70,9 +74,6 @@ class Pipe:
         self.__lock = True
         fso = next(obj for obj in self._contents if obj.guid == guid)
         fso_state = str(fso.state)
-        # print('-+'*10)
-        # print(f'pipe says that {fso.name} is {fso.state.summary}')
-        # print('-+'*10)
         if fso_state == 'FINISHED':
             self.remove_fso(fso)
         self.broadcast()
@@ -125,13 +126,13 @@ class Pipe:
 
     def create_fso(self, fso_path, props):
         fittings = []
-        # if it's a normal Fitting, need to give it a queue
-        # otherwise it just needs to be instantiated
+        # if it's an async Fitting, feed it the httpx client
+        # otherwise feed it a queue object
         for fitting in self._fittings:
-            if isinstance(fitting, IO_Fitting):
-                fittings.append(fitting(self.queues))
+            if Async_Fitting in fitting.__bases__:
+                fittings.append(fitting(self.client))
             else:
-                fittings.append(fitting())
+                fittings.append(fitting(self.queues))
             
         new_fso = create_FSO(
             fso_path,

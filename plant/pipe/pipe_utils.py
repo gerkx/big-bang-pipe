@@ -1,8 +1,12 @@
+from typing import Type
+
 from box import Box
+from .fittings import *
 
 from .filters import Filter
 from .pipe import Pipe
-from .fittings import *
+
+from httpx import AsyncClient
 
 def call_fitting(fitting:str):
     return globals()[fitting]
@@ -10,7 +14,7 @@ def call_fitting(fitting:str):
 def init_filter(filter:str):
     return Filter(filter)
 
-def init_Pipe(queues, callback, **kwargs):
+def init_Pipe(queues, client:Type[AsyncClient], callback, **kwargs):
     config = Box(kwargs)
     filters = [init_filter(filter) for filter in config.filters]
     fittings = [call_fitting(fitting) for fitting in config.fittings]
@@ -19,6 +23,7 @@ def init_Pipe(queues, callback, **kwargs):
         dir = config.dir, 
         reject_dir  =config.reject_dir,
         queues = queues,
+        client = client,
         filters = filters,
         fittings = fittings,
         props = config.props
