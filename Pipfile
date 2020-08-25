@@ -15,6 +15,7 @@ nanoid = "*"
 python-box = "*"
 httpx = "*"
 nest-asyncio = "*"
+peewee = "*"
 
 [requires]
 python_version = "3.8"

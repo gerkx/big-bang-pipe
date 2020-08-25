@@ -17,8 +17,64 @@ import json
 import asyncio
 if __name__ == "__main__":
 
-    loop = asyncio.get_event_loop()
-    queues = Queue()
+    from peewee import *
+    from datetime import date
+
+    db = SqliteDatabase('boop.db')
+
+    class Person(Model):
+        name = CharField()
+        birthday = DateField()
+
+        class Meta:
+            database = db
+
+    class Pet(Model):
+        owner = ForeignKeyField(Person, backref='pets')
+        name = CharField()
+        animal_type = CharField()
+
+        class Meta:
+            database = db
+
+    db.connect()
+
+    db.create_tables([Person, Pet])
+
+    tia_cole = Person(name='Nicole', birthday=date(1985, 5, 3))
+    tia_cole.save()
+
+    amanda = Person.create(name='Amanda', birthday=date(1982,7,27))
+
+    tia_cole.name = 'Nikki'
+    tia_cole.save()
+
+    amanda_cat = Pet.create(owner=amanda, name='Belle', animal_type='cat')
+    nikki_dog = Pet.create(owner=tia_cole, name='Chloe', animal_type='dog')
+
+    wifey = Person.select().where(Person.name == 'Amanda')
+
+    sistra = Person.get(Person.name == 'Nikki')
+
+    query = (
+        Pet.select(Pet, Person)
+        .join(Person)
+        .where(Pet.animal_type == 'cat')
+    )
+    
+    for pet in query:
+        print(pet.name, pet.owner.name)
+
+
+
+    db.close()
+
+
+
+
+
+    # loop = asyncio.get_event_loop()
+    # queues = Queue()
     json_url = 'https://jsonplaceholder.typicode.com/posts'
 
     
@@ -89,9 +145,9 @@ if __name__ == "__main__":
     }]
 
     
-    plant = Plant(queues, config)
+    # plant = Plant(config)
 
-    plant.start()
+    # plant.start()
     
 
 

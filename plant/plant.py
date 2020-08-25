@@ -9,20 +9,20 @@ from .queues import Queue
 
 class Plant:
     def __init__(self,
-        queues: Type[Queue],
+        # queues: Type[Queue],
         pipe_configs:List[dict], 
         poll_freq:float = 1.0, 
         number_of_threads:int = 1
     ):
         self.client = AsyncClient()
-        self.pipes:List[Pipe] = self.init_pipes(queues, pipe_configs)
-        self.queues:Type[Queue] = queues
+        self.queues:Type[Queue] = Queue()
+        self.pipes:List[Pipe] = self.init_pipes(self.queues, pipe_configs)
         self._frequency:float = poll_freq
         self.number_of_threads:int = number_of_threads
         self.__shutdown:Type[Event] = Event()
         self._threads:List[Thread] = self.threaded_poll()
 
-        # self.start()
+        self.start()
 
     def antenna(self, guid):
         # pipe = next(pipe for pipe in self.pipes if pipe.guid == guid)
