@@ -1,9 +1,9 @@
 import os, shutil
 import os.path as path
 
-from .base_fittings import Fitting
+from .base_fittings import IO_Fitting
 
-class Test_Fitting2(Fitting):
+class Test_Fitting2(IO_Fitting):
 
     def fitting(self):
         new_path = "F:\\tmp\\dos"

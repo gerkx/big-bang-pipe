@@ -7,7 +7,7 @@ from ...fso import FSO
 from ....queues import Queue
 
 
-class Fitting:
+class IO_Fitting:
     def __init__(self, queues:Type[Queue]):
         self.state:object = Fitting_State(self.broadcast)
         self.queue:object = queues.io
@@ -46,7 +46,7 @@ class Fitting:
         print("overwrite the fitting method with your own instructions!")
 
 
-class CPU_Fitting(Fitting):
+class CPU_Fitting(IO_Fitting):
     def __init__(self, queues:object):
         super().__init__(queues)
         self.queue = queues.cpu

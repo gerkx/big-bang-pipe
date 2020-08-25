@@ -5,7 +5,7 @@ from nanoid import generate
 
 from .fso import create_FSO, FSO
 
-from .fittings.base_fittings.fittings import Fitting
+from .fittings.base_fittings.fittings import IO_Fitting
 
 
 class Pipe:
@@ -128,7 +128,7 @@ class Pipe:
         # if it's a normal Fitting, need to give it a queue
         # otherwise it just needs to be instantiated
         for fitting in self._fittings:
-            if isinstance(fitting, Fitting):
+            if isinstance(fitting, IO_Fitting):
                 fittings.append(fitting(self.queues))
             else:
                 fittings.append(fitting())

@@ -25,8 +25,9 @@ if __name__ == "__main__":
     # from plant.pipe.fittings.test_fitting import Test_Fitting
     # from plant.pipe.fittings.test_fitting2 import Test_Fitting2
     from plant.pipe.fittings.base_fittings.async_fitting import Async_Fitting
+    from plant.pipe.fittings.async_test_fitting import Async_Test_Fitting
 
-    class_str = "Async_Fitting"
+    class_str = "Async_Test_Fitting"
     watch = "F:\\tmp\\watch"
     reject = "F:\\tmp\\reject"
 
@@ -83,7 +84,7 @@ if __name__ == "__main__":
         'reject_dir' : reject,
         'fittings' : [class_str],
         'filters' : [filtro],
-        'props': {'base_dir': "F:\\tmp\\dos"}
+        'props': {'base_dir': "F:\\tmp\\dos", 'url': json_url}
     }]
 
     
