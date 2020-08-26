@@ -17,57 +17,87 @@ import json
 import asyncio
 if __name__ == "__main__":
 
-    from peewee import *
+    # from peewee import *
     from datetime import date
+    from nanoid import generate
 
-    db = SqliteDatabase('boop.db')
+    from peewee import OperationalError
 
-    class Person(Model):
-        name = CharField()
-        birthday = DateField()
+    from database.models.client_model import Client
+    from database.models.project_model import Project
 
-        class Meta:
-            database = db
+    try:
+        Client.create_table()
+    except OperationalError:
+        print('Client table already exists')
+    try:
+        Project.create_table()
+    except OperationalError:
+        print('Project table already exists')
 
-    class Pet(Model):
-        owner = ForeignKeyField(Person, backref='pets')
-        name = CharField()
-        animal_type = CharField()
+    Client().new(name="gerkx")
+    Client().new(name="gerkx")
 
-        class Meta:
-            database = db
 
-    db.connect()
+    gerkx = Client.get(Client.name == 'gerkx')
 
-    db.create_tables([Person, Pet])
+    # print(query.name, query.guid)
+    Project.get_or_create(client = gerkx, name = 'attic', defaults={'guid': generate()})
 
-    tia_cole = Person(name='Nicole', birthday=date(1985, 5, 3))
-    tia_cole.save()
+    Project.get_or_create(client = gerkx, name = 'workbench', defaults={'guid': generate()})
 
-    amanda = Person.create(name='Amanda', birthday=date(1982,7,27))
-
-    tia_cole.name = 'Nikki'
-    tia_cole.save()
-
-    amanda_cat = Pet.create(owner=amanda, name='Belle', animal_type='cat')
-    nikki_dog = Pet.create(owner=tia_cole, name='Chloe', animal_type='dog')
-
-    wifey = Person.select().where(Person.name == 'Amanda')
-
-    sistra = Person.get(Person.name == 'Nikki')
-
-    query = (
-        Pet.select(Pet, Person)
-        .join(Person)
-        .where(Pet.animal_type == 'cat')
-    )
+    for project in gerkx.projects:
+        print("xxxxxxx ", project.name, project.guid)
     
-    for pet in query:
-        print(pet.name, pet.owner.name)
+
+    # db = SqliteDatabase('boop.db')
+
+    # class Person(Model):
+    #     name = CharField()
+    #     birthday = DateField()
+
+    #     class Meta:
+    #         database = db
+
+    # class Pet(Model):
+    #     owner = ForeignKeyField(Person, backref='pets')
+    #     name = CharField()
+    #     animal_type = CharField()
+
+    #     class Meta:
+    #         database = db
+
+    # db.connect()
+
+    # db.create_tables([Person, Pet])
+
+    # tia_cole = Person(name='Nicole', birthday=date(1985, 5, 3))
+    # tia_cole.save()
+
+    # amanda = Person.create(name='Amanda', birthday=date(1982,7,27))
+
+    # tia_cole.name = 'Nikki'
+    # tia_cole.save()
+
+    # amanda_cat = Pet.create(owner=amanda, name='Belle', animal_type='cat')
+    # nikki_dog = Pet.create(owner=tia_cole, name='Chloe', animal_type='dog')
+
+    # wifey = Person.select().where(Person.name == 'Amanda')
+
+    # sistra = Person.get(Person.name == 'Nikki')
+
+    # query = (
+    #     Pet.select(Pet, Person)
+    #     .join(Person)
+    #     .where(Pet.animal_type == 'cat')
+    # )
+    
+    # for pet in query:
+    #     print(pet.name, pet.owner.name)
 
 
 
-    db.close()
+    # db.close()
 
 
 

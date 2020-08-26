@@ -8,7 +8,7 @@ from peewee import (Model, SqliteDatabase,
 
 
 db = SqliteDatabase('temp.db')
-
+# PORTED
 class BaseModel(Model):
     id = AutoField()
     guid = UUIDField()
@@ -31,9 +31,11 @@ class User(Model):
     class Meta:
         database = db
 
+# PORTED
 class Client(BaseModel):
     name = CharField()
 
+# PORTED
 class Project(BaseModel):
     client = ForeignKeyField(Client, backref='projects')
     name = CharField()
@@ -79,6 +81,7 @@ class WorkingVis(BaseModel):
     grade = ForeignKeyField(Grade, backref='int_grades', null=True)
     compo = ForeignKeyField(Compo, backref='int_compos', null=True)
 
+# PORTED
 class AudioModel(BaseModel):
     name = CharField()
     inbound_name = CharField()
