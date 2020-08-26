@@ -35,19 +35,26 @@ if __name__ == "__main__":
     except OperationalError:
         print('Project table already exists')
 
-    Client().new(name="gerkx")
-    Client().new(name="gerkx")
+    # Client().new(name="gerkx")
+    # Client().new(name="gerkx")
 
 
-    gerkx = Client.get(Client.name == 'gerkx')
+    gerkx = Client().new_or_get('gerkx')
+
+    print(gerkx.guid)
+
+    workbench = Project().new_or_get(client=gerkx, name='workbench')
+    print(workbench.guid)
+
+    [print(proj.name, proj.guid) for proj in gerkx.projects]
 
     # print(query.name, query.guid)
-    Project.get_or_create(client = gerkx, name = 'attic', defaults={'guid': generate()})
+    # Project.get_or_create(client = gerkx, name = 'attic', defaults={'guid': generate()})
 
-    Project.get_or_create(client = gerkx, name = 'workbench', defaults={'guid': generate()})
+    # Project.get_or_create(client = gerkx, name = 'workbench', defaults={'guid': generate()})
 
-    for project in gerkx.projects:
-        print("xxxxxxx ", project.name, project.guid)
+    # for project in gerkx.projects:
+    #     print("xxxxxxx ", project.name, project.guid)
     
 
     # db = SqliteDatabase('boop.db')

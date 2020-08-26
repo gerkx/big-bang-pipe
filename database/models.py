@@ -42,6 +42,7 @@ class Project(BaseModel):
     production_number:int = IntegerField(null=True)
     emission_number:int = IntegerField(null=True)
 
+# PORTED
 class Shot(BaseModel):
     project = ForeignKeyField(Project, backref='shots')
     name = CharField(null=True)
