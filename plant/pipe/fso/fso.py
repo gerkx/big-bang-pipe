@@ -22,6 +22,7 @@ class FSO:
         self.__guid:str = generate()
         self.__path:str = path
         self.__locked:bool = False
+        self.__inbound_name:str = self.extract_inbound_name(path)
 
 
     def __del__(self):
@@ -45,6 +46,14 @@ class FSO:
 
     def unlock(self):
         self.__locked = False
+
+    @property
+    def inbound_name(self):
+        return self.__inbound_name
+
+    @staticmethod
+    def extract_inbound_name(orig_path):
+        return path.splitext(path.basename(orig_path))[0]
     
     @property
     def locked(self) -> bool:
