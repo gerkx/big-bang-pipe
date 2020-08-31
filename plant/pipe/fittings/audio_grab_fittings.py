@@ -60,6 +60,7 @@ class Copy_Audio_Grab_To_Edit(IO_Fitting):
         shutil.copy2(self.fso.path, grab_path)
         self.fso.props.editorial_grab = grab_path
 
+
 class Save_Audio_Grab_To_DB(IO_Fitting):
     def fitting(self):
         client = self.fso.props.client
@@ -77,6 +78,14 @@ class Save_Audio_Grab_To_DB(IO_Fitting):
             name = self.fso.filename,
             lang = self.fso.props.lang if 'lang' in self.fso.props else 'ENG'
         )
+
+class Add_Transcode_To_DB(IO_Fitting):
+    def fitting(self):
+        self.fso.props.audio_grab.update(
+            mp3_name = self.fso.props.mp3_name,
+            mp3_location = self.fso.props.mp3_location,
+        )
+
         
 
         
