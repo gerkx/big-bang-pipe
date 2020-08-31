@@ -18,6 +18,7 @@ class Shot(BaseModel):
         new_shot, _ = self.get_or_create(
             project = project,
             name = name,
+            shot = shot,
             defaults = {'guid': generate(), **kwargs}
         )
         return new_shot

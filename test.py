@@ -23,8 +23,17 @@ if __name__ == "__main__":
 
     from peewee import OperationalError
 
-    from database.models.client_model import Client
-    from database.models.project_model import Project
+    # from database.models.client_model import Client
+    # from database.models.project_model import Project
+    # from database.models.shot_model import Shot
+    # from database.models.render_seq_model import RenderSeq
+
+    test_dict = {'name': 'Pat'}
+
+    test_box = Box(test_dict)
+
+    print('name' in test_box)
+    print('boop' in test_box)
 
     try:
         Client.create_table()
@@ -34,6 +43,14 @@ if __name__ == "__main__":
         Project.create_table()
     except OperationalError:
         print('Project table already exists')
+    try:
+        Shot.create_table()
+    except OperationalError:
+        print('Shot table already exists')
+    try:
+        RenderSeq.create_table()
+    except OperationalError:
+        print('RenderSeq table already exists')
 
     # Client().new(name="gerkx")
     # Client().new(name="gerkx")
@@ -41,12 +58,33 @@ if __name__ == "__main__":
 
     gerkx = Client().new_or_get('gerkx')
 
-    print(gerkx.guid)
 
     workbench = Project().new_or_get(client=gerkx, name='workbench')
-    print(workbench.guid)
+    attic = Project().new_or_get(client=gerkx, name='attic')
+    kitchen = Project().new_or_get(client=gerkx, name='kitchen')
 
-    [print(proj.name, proj.guid) for proj in gerkx.projects]
+    top = Shot().new_or_get(project=workbench, name='top', shot='101')
+    left = Shot().new_or_get(project=workbench, name='left', shot='102')
+    counter = Shot().new_or_get(project=kitchen, name='counter', shot='101')
+ 
+    ver01 = RenderSeq().new_or_get(shot=top, name='top_v001', inbound_name='top', location='attic')
+    ver02 = RenderSeq().new_or_get(shot=top, name='top_v002', inbound_name='top', location='attic')
+
+    query = Project.get(Project.name == 'workbench')
+    shot = next(shot for shot in query.shots if shot.name == 'top')
+    print(len(shot.renders))
+
+    # shots = [shots for shots in query.shots]
+    # print(shots[0].name)
+    # print(shots[0].renders)
+    # vers = [vers for vers in shots.renders]
+    # print([ver.name for ver in vers])
+
+    # query = (RenderSeq
+    #         .select(RenderSeq, Shot)
+
+    # )
+
 
     # print(query.name, query.guid)
     # Project.get_or_create(client = gerkx, name = 'attic', defaults={'guid': generate()})

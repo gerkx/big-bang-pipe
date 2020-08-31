@@ -1,9 +1,13 @@
 import datetime
+from typing import Type
 
 from peewee import (
     Model, SqliteDatabase, AutoField, UUIDField, 
     DateTimeField, CharField, IntegerField
 )
+from nanoid import generate
+
+from .project_model import Project
 
 db = SqliteDatabase('temp.db')
 
@@ -30,3 +34,22 @@ class AudioModel(BaseModel):
     mp3_name = CharField(null=True)
     mp3_location = CharField(null=True)
     mp3_link = CharField(null=True)
+
+    def new_or_get(self,
+        project:Type[Project],
+        name:str,
+        inbound_name: str,
+        location:str,
+        **kwargs
+    ):
+        audio, _ = self.get_or_create(
+            project = project,
+            name = name,
+            defaults = {
+                'guid': generate(),
+                'inbound_name': inbound_name,
+                'location': location,
+                **kwargs
+            }
+        )
+        return audio

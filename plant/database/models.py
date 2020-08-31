@@ -51,6 +51,7 @@ class Shot(BaseModel):
     duration = IntegerField(null=True)
     framerate = FloatField(null=True)
 
+# PORTED
 class VisModel(BaseModel):
     location = CharField()
     name = CharField()
@@ -58,6 +59,7 @@ class VisModel(BaseModel):
     duration = IntegerField(null=True)
     frames = CharField(null=True)
 
+# PORTED
 class RenderSeq(VisModel):
     shot = ForeignKeyField(Shot, backref='renders')
     transcode_name = CharField(null=True)
@@ -67,12 +69,15 @@ class RenderSeq(VisModel):
     mp4_location = CharField(null=True)
     mp4_link = CharField(null=True)
 
+# PORTED
 class Grade(VisModel):
     shot = ForeignKeyField(Shot, backref='grades')
 
+# PORTED
 class Compo(VisModel):
     shot = ForeignKeyField(Shot, backref='compos')
 
+# PORTED
 class WorkingVis(BaseModel):
     # shot = ForeignKeyField(Shot, backref='int_viz')
     name = CharField()
@@ -91,21 +96,26 @@ class AudioModel(BaseModel):
     mp3_location = CharField(null=True)
     mp3_link = CharField(null=True)
 
+# PORTED
 class AudioGrab(AudioModel):
     project = ForeignKeyField(Project, backref='audio_grabs')
     lang = CharField(null=True)
 
+# PORTED
 class Music(AudioModel):
     project = ForeignKeyField(Project, backref='music')
 
+# PORTED
 class Mix(AudioModel):
     project = ForeignKeyField(Project, backref='mixes')
     lang = CharField(null=True)
 
+# PORTED
 class Stem(AudioModel):
     project = ForeignKeyField(Project, backref='stems')
     lang = CharField(null=True)
 
+# PORTED
 class WorkingAudio(BaseModel):
     name = CharField()
     location = CharField()
