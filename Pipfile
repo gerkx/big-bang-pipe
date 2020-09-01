@@ -16,6 +16,7 @@ python-box = "*"
 httpx = "*"
 nest-asyncio = "*"
 peewee = "*"
+bcrypt = "*"
 
 [requires]
 python_version = "3.8"
