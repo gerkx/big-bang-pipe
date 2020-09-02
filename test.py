@@ -88,7 +88,7 @@ if __name__ == "__main__":
     fittings = [
         'Rename_Audio_Grab', 'Move_Audio_Grab_To_Server', 'Save_Audio_Grab_To_DB',
         'Copy_Audio_Grab_To_Edit', 'Add_Audio_To_WorkingAudio_DB', 'Asana_Create_Task',
-        # 'Transcode_To_MP3', 'Add_MP3_To_DB'
+        'Transcode_To_MP3', 'Add_MP3_To_DB'
     ]
 
     watch = "F:\\tmp\\watch"

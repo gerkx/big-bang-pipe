@@ -1,7 +1,7 @@
-import json, os
+import asyncio, json, os
 from datetime import datetime, timedelta
 
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPStatusError
 from box import Box
 
 from .base_fittings import Async_Fitting
@@ -27,30 +27,30 @@ def get_project(props):
 async def get_asana_proj(client, props):
     try:
         proj = Asana_Project().get(Asana_Project.name == get_prod_num(props))
-        print(f'found asana project in db: {proj.name}')
+        print(f'retrieved asana project {proj.name} from DB')
         return proj
     except:
         async with client as client:
-            print('unable to find asana proj in db, posting to create new')
             header = {'Authorization': f'Bearer {os.getenv("ASANA_KEY")}'}
             data = {
                 'name': get_prod_num(props),
                 'team': os.getenv('ASANA_TEAM')
             }
             url = 'https://app.asana.com/api/1.0/projects'
-            res = await client.post(url=url, data=data, headers=header)
-            print(f"get asana proj res: ", res)
-            res_data = Box(res.json()['data'])
-            proj = Asana_Project().new_or_get(
-                gid = res_data.gid,
-                name = get_prod_num(props),
-                project = props.project
-            )
-            return proj
-            # try:
-            # except:
-            #     # TODO: Handle HTTP errors
-            #     print('!!!! Need to handle http errors!!!!!!')
+            
+            try:
+                print(f"posting new asana project for episode {get_prod_num(props)}")
+                res = await client.post(url=url, data=data, headers=header)
+                res_data = Box(res.json()['data'])
+                proj = Asana_Project().new_or_get(
+                    gid = res_data.gid,
+                    name = get_prod_num(props),
+                    project = props.project
+                )
+                return proj
+            except HTTPStatusError as exc:
+                print(f'Error response {exc.response.status_code} while posting proj for {get_prod_num(props)}')
+                return None
 
 
 def construct_note(fso):
@@ -58,7 +58,6 @@ def construct_note(fso):
         db = fso.props.working_db
     else:
         db = None
-    print("db: "+ db.name)
     if db:
         if db.modified > db.created:
             return (
@@ -86,6 +85,11 @@ class Asana_Create_Task(Async_Fitting):
                 self.fso.props.project = get_project(self.fso.props)
             print('getting asana project')
             self.fso.props.asana_project = await get_asana_proj(self.client, self.fso.props)
+        
+        if not self.fso.props.asana_project:
+            print(f"unable to post task for {self.fso.filename} - Error retrieving relevant project")
+            return
+        
         async with self.client as client:
             header = {'Authorization': f'Bearer {os.getenv("ASANA_KEY")}'}
             data = {
@@ -96,21 +100,27 @@ class Asana_Create_Task(Async_Fitting):
                 'notes': construct_note(self.fso)
             }
             url = 'https://app.asana.com/api/1.0/tasks'
-            # try:
-            res = await client.post(url=url, data=data, headers=header)
-            print(f"{self.fso.filename} create asana task res: ", res)
-            res_data = Box(res.json()['data'])
-            db_data = {
-                'gid': res_data.gid,
-                'name': res_data.name,
-                'project': self.fso.props.asana_project,
-                'pipe_project': self.fso.props.project,
-                'notes': res_data.notes,
-            }
-            if 'assignee' in res_data:
-                db_data['assignee'] = res_data.assignee.gid
-            self.fso.props.asana_task = Asana_Task().new_or_get(**db_data)
-            # except:
-            #     # TODO: Handle HTTP errors
-            #     print('!!!! Need to handle http errors!!!!!!') 
+            
+            for _ in range(60):
+                try:
+                    print(f'posting new task for {self.fso.filename}')
+                    res = await client.post(url=url, data=data, headers=header)
+                    res.raise_for_status()
+                    res_data = Box(res.json()['data'])
+                    db_data = {
+                        'gid': res_data.gid,
+                        'name': res_data.name,
+                        'project': self.fso.props.asana_project,
+                        'pipe_project': self.fso.props.project,
+                        'notes': res_data.notes,
+                    }
+                    if 'assignee' in res_data:
+                        db_data['assignee'] = res_data.assignee.gid
+                    self.fso.props.asana_task = Asana_Task().new_or_get(**db_data)
+                
+                except HTTPStatusError as exc:
+                    print(f'Error response {exc.response.status_code} while posting task for {self.fso.filename}')
+                    await asyncio.sleep(1)
 
+                else:
+                    break

@@ -3,6 +3,7 @@ from datetime import datetime
 
 from nanoid import generate
 from peewee import ForeignKeyField, CharField
+from retrying import retry
 
 from .base_models import AudioModel, BaseModel
 from .project_model import Project
@@ -37,6 +38,7 @@ class WorkingAudio(BaseModel):
     mix = ForeignKeyField(Mix, backref='int_mix', null=True)
     stem = ForeignKeyField(Stem, backref='int_stems', null=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         name:str,
         location:str,

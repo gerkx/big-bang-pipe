@@ -3,11 +3,9 @@ import os.path as path
 from typing import Type
 
 from httpx import AsyncClient
-
 from nanoid import generate
 
 from .fso import create_FSO, FSO
-
 from .fittings.base_fittings import Async_Fitting
 
 class Pipe:
@@ -16,7 +14,6 @@ class Pipe:
         dir:str, 
         reject_dir:str,
         queues:object,
-        client:Type[AsyncClient], 
         filters:list, 
         fittings:list, 
         props:dict,
@@ -29,7 +26,6 @@ class Pipe:
         self.directory:str = dir
         self.reject_directory:str = reject_dir
         self.queues:object = queues
-        self.client:Type[AsyncClient] = client
         self.filters:list = filters
         self.recurse:bool = recurse
         self._fittings:list = fittings
@@ -65,7 +61,7 @@ class Pipe:
             self.__active = False
 
     def update(self):
-        print("...")
+        print(f"Pipe: {self.name}... Size: {len(self.contents)}")
         if self.active and not self.__lock:
             self.check_existing_pipe_contents()
             self.check_new_pipe_contents()
@@ -93,9 +89,12 @@ class Pipe:
     def init_pipe_contents(self) -> list:
         fso_list:list = []
         for obj in self.pipe_contents():
-            props = {**self.__props, **self.filter(obj)}
+            fitting_key, filter_props = self.filter(obj)
+            if not filter_props:
+                continue
+            props = {**self.__props, **filter_props}
             if props:
-                new_fso = self.create_fso(obj, props)
+                new_fso = self.create_fso(fitting_key, obj, props)
                 fso_list.append(new_fso)
                 self.broadcast()
         return fso_list
@@ -110,27 +109,29 @@ class Pipe:
     def check_new_pipe_contents(self):
         for obj in self.pipe_contents():
             if obj not in [fso.path for fso in self._contents]:
-                props = {**self.__props, **self.filter(obj)}
+                fitting_key, filter_props = self.filter(obj)
+                if not filter_props:
+                    continue
+                props = {**self.__props, **filter_props}
                 if props:
-                    new_fso = self.create_fso(obj, props)
+                    new_fso = self.create_fso(fitting_key, obj, props)
                     self._contents.append(new_fso)
                     self.broadcast()
 
-    def filter(self, fso_path):
+    def filter(self, fso_path) -> tuple:
         name:str = path.splitext(path.basename(fso_path))[0]
         if not any([filter.match(name) for filter in self.filters]):
             self.reject(fso_path)
+            return (None, None)
         else:
             filtro = next(filter for filter in self.filters if filter.match(name))
-            return filtro.extract_vals(name)
+            return (filtro.name, filtro.extract_vals(name))
 
-    def create_fso(self, fso_path, props):
+    def create_fso(self, fitting_key:str, fso_path:str, props:dict):
         fittings = []
-        # if it's an async Fitting, feed it the httpx client
-        # otherwise feed it a queue object
         for fitting in self._fittings:
             if Async_Fitting in fitting.__bases__:
-                fittings.append(fitting(self.client))
+                fittings.append(fitting())
             else:
                 fittings.append(fitting(self.queues))
             
@@ -144,6 +145,8 @@ class Pipe:
         return new_fso
     
     def reject(self, fso_path):
+        if not path.isdir(self.reject_directory):
+            os.makedirs(self.reject_directory)
         reject_path = path.join(self.reject_directory, path.basename(fso_path))
         print(f'{fso_path} doesn\'t match any filter criterias!')
         shutil.move(fso_path, reject_path)

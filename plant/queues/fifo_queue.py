@@ -28,6 +28,7 @@ class FIFO_Queue:
 
     def worker(self):
         while True:
+            time.sleep(.001)
             task = self._queue.get()
             if task is None:
                 break

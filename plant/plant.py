@@ -14,7 +14,6 @@ class Plant:
         poll_freq:float = 1.0, 
         number_of_threads:int = 1
     ):
-        self.client = AsyncClient()
         self.queues:Type[Queue] = Queue()
         self.pipes:List[Pipe] = self.init_pipes(self.queues, pipe_configs)
         self._frequency:float = poll_freq
@@ -33,13 +32,13 @@ class Plant:
     def start(self):
         try:
             while True:
-                pass
+                time.sleep(.001)
         except KeyboardInterrupt:
             print('signing off')
             self.deactivate()
 
     def init_pipes(self, queues:Type[Queue], pipe_configs:List[dict]) -> List[dict]:
-        return [init_Pipe(queues, self.client, self.antenna, **config) for config in pipe_configs]
+        return [init_Pipe(queues, self.antenna, **config) for config in pipe_configs]
     
     def threaded_poll(self):
         threads = []

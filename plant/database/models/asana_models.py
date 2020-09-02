@@ -4,6 +4,7 @@ from nanoid import generate
 from peewee import (
     CharField, ForeignKeyField, TextField
 )
+from retrying import retry
 
 from .base_models import BaseModel
 from .user_model import User
@@ -16,6 +17,7 @@ class Asana_User(BaseModel):
     gid = CharField()
     email = CharField()
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         gid:str,
         name:str,
@@ -38,6 +40,7 @@ class Asana_Project(BaseModel):
     gid = CharField()
     name = CharField(unique=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         gid:str,
         name:str,
@@ -57,6 +60,7 @@ class Asana_Tag(BaseModel):
     gid = CharField()
     name = CharField(unique=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         gid:str,
         name:str
@@ -78,6 +82,7 @@ class Asana_Task(BaseModel):
     name = CharField(null=True)
     notes = TextField(null=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         project:Type[Asana_Project],
         gid:str,

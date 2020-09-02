@@ -6,10 +6,11 @@ from peewee import (
     DateTimeField, CharField, IntegerField
 )
 from nanoid import generate
+from retrying import retry
 
 # from .project_model import Project
 
-db = SqliteDatabase('temp.db')
+db = SqliteDatabase('temp.db', timeout = 15)
 
 class BaseModel(Model):
     id = AutoField()
@@ -35,6 +36,7 @@ class AudioModel(BaseModel):
     mp3_location = CharField(null=True)
     mp3_link = CharField(null=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         project:object,
         name:str,

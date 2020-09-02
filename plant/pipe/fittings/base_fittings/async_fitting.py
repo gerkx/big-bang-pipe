@@ -4,13 +4,14 @@ from typing import Callable, Type, List
 
 from httpx import AsyncClient
 from nanoid import generate
+from retrying import retry
 
 from .fitting_state import Fitting_State
 from ...fso import FSO
 
 
 class Async_Fitting:
-    def __init__(self, client:Type[AsyncClient]):
+    def __init__(self):
         self.state:Type[Fitting_State] = Fitting_State(self.broadcast)
         self.fso:Type[FSO] = FSO
         self.__guid:str = generate()
@@ -18,6 +19,7 @@ class Async_Fitting:
         # self.client:Type[AsyncClient] = client
         self.client = None
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def enqueue(self):
         self.state.enqueue()
         asyncio.run(self.main())
@@ -42,7 +44,7 @@ class Async_Fitting:
             print("fso locked")
             asyncio.sleep(.1)
         if not self.fso.locked:
-            self.client = AsyncClient()
+            self.client = AsyncClient(timeout=30.0)
             self.fso.lock()
             self.state.process()
             await self.fitting()

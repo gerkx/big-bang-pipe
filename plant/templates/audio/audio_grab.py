@@ -17,6 +17,7 @@ defs = {
 }
 
 audio_grab_template = {
+    'name': 'audio_grab',
     'template': '${char} CAP${episode} ${take}',
     'definitions': defs
 }

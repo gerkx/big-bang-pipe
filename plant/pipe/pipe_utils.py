@@ -15,7 +15,7 @@ def call_fitting(fitting:str):
 def init_filter(filter:str):
     return Filter(filter)
 
-def init_Pipe(queues, client:Type[AsyncClient], callback, **kwargs):
+def init_Pipe(queues, callback, **kwargs):
     config = Box(kwargs)
     config.props.client = Client().new_or_get(config.props.client)
     filters = [init_filter(filter) for filter in config.filters]
@@ -25,7 +25,6 @@ def init_Pipe(queues, client:Type[AsyncClient], callback, **kwargs):
         dir = config.dir, 
         reject_dir  =config.reject_dir,
         queues = queues,
-        client = client,
         filters = filters,
         fittings = fittings,
         props = config.props,

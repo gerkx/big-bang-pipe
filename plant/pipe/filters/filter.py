@@ -6,9 +6,10 @@ from typing import Type
 
 class Filter:
     def __init__(self, template: dict):
-       self.template:str =  template['template']
-       self.definitions:dict = template['definitions']
-       self.slice_idxs = self.create_slice_idxs()
+        self.name:str = template['name']
+        self.template:str =  template['template']
+        self.definitions:dict = template['definitions']
+        self.slice_idxs = self.create_slice_idxs()
 
 
     def match(self, name):

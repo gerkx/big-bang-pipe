@@ -1,8 +1,7 @@
 import bcrypt
-from peewee import (
-    CharField,
-)
+from peewee import CharField
 from nanoid import generate
+from retrying import retry
 
 from .base_models import BaseModel
 
@@ -19,6 +18,7 @@ class User(BaseModel):
         encoded_pass = raw_pass_str.encode('utf-8')
         return bcrypt.hashpw(encoded_pass, bcrypt.gensalt())
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(self,
         first_name:str,
         last_name:str,

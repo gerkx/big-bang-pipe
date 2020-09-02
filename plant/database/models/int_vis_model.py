@@ -2,6 +2,7 @@ from typing import Type
 
 from peewee import CharField, ForeignKeyField, IntegerField
 from nanoid import generate
+from retrying import retry
 
 from .base_models import BaseModel
 from .shot_model import Shot
@@ -18,6 +19,7 @@ class IntVis(BaseModel):
     grade = ForeignKeyField(Grade, backref='int_grades', null=True)
     compo = ForeignKeyField(Compo, backref='int_compos', null=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def upsert(self, shot:Type[Shot], name:str, loc:str, **kwargs):
         int_vis = (self
             .replace(shot = shot, **{'name': name, 'locaction': loc, **kwargs})

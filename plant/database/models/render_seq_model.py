@@ -2,6 +2,7 @@ from typing import Type
 
 from nanoid import generate
 from peewee import ForeignKeyField, CharField
+from retrying import retry
 
 from .base_models import VisModel
 from .shot_model import Shot
@@ -17,6 +18,7 @@ class RenderSeq(VisModel):
     mp4_location:str = CharField(null=True)
     mp4_link:str = CharField(null=True)
 
+    @retry(wait_random_min=250, wait_random_max=2000, stop_max_attempt_number=10)
     def new_or_get(
         self, 
         shot:Type[Shot], 
