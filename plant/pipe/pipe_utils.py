@@ -17,7 +17,7 @@ def init_filter(filter:str):
 
 def init_Pipe(queues, client:Type[AsyncClient], callback, **kwargs):
     config = Box(kwargs)
-    config.props.client = Client().new_or_get(config.client)
+    config.props.client = Client().new_or_get(config.props.client)
     filters = [init_filter(filter) for filter in config.filters]
     fittings = [call_fitting(fitting) for fitting in config.fittings]
     new_pipe = Pipe(

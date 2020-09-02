@@ -38,8 +38,14 @@ class Async_Fitting:
             self._subscribers.append(callback)
 
     async def main(self):
+        print("async main")
+        print(self.fso.locked)
+        while self.fso.locked:
+            print("fso locked")
+            asyncio.sleep(.1)
         if not self.fso.locked:
             self.fso.lock()
+            print(self.fso.locked)
             self.state.process()
             await self.fitting()
             self.state.finish()

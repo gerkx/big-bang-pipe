@@ -7,7 +7,7 @@ from peewee import (
 )
 from nanoid import generate
 
-from .project_model import Project
+# from .project_model import Project
 
 db = SqliteDatabase('temp.db')
 
@@ -36,7 +36,7 @@ class AudioModel(BaseModel):
     mp3_link = CharField(null=True)
 
     def new_or_get(self,
-        project:Type[Project],
+        project:object,
         name:str,
         inbound_name: str,
         location:str,

@@ -16,14 +16,18 @@ def get_prod_num(props):
     return int(props.season) * 100 + int(props.episosode)
 
 def get_project(props):
+    print("getting Project()")
     return Project().new_or_get(
             client = props.client,
             prod_num = get_prod_num(props))
 
 async def get_asana_proj(client, props):
+    print("get_asana_proj")
     try:
+        print("trying to get ASANA_PROJECT")
         proj = Asana_Project().get(Asana_Project.name == get_prod_num(props))
     except:
+        print("except!")
         async with client as client:
             header = {'Authorization': f'Bearer {os.getenv("ASANA_KEY")}'}
             data = {
@@ -72,8 +76,11 @@ def construct_note(fso):
 
 class Asana_Create_Task(Async_Fitting):
     async def fitting(self):
+        print("create_task: start")
         if not 'asana_project' in self.fso.props:
+            print("create_task: no asana_project in props")
             if not 'project' in self.fso.props:
+                print("create_task: no project in props")
                 self.fso.props.project = get_project(self.fso.props)
             self.fso.props.asana_project = await get_asana_proj(self.client, self.fso.props)
         async with self.client as client:

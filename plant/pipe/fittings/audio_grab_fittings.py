@@ -13,12 +13,12 @@ class Rename_Audio_Grab(IO_Fitting):
         props = self.fso.props
         episode = str(props.season * 100 + int(props.episode)).zfill(3)
         take = 'retake' if 'retakes' in props.take.lower() else 'takes'
-        char = props.lower().replace(' ', '')
+        char = props.char.lower().replace(' ', '')
         now = datetime.now()
         date =  str(now.year).zfill(2) + str(now.month).zfill(2) + str(now.day).zfill(2)
 
         new_name = f'{props.program}_{episode}_{take}_{char}_{date}{self.fso.extension}'
-        new_path = path.join(self.fso.base_dir, new_name)
+        new_path = path.join(self.fso.directory, new_name)
 
         os.rename(self.fso.path, new_path)
         self.fso.path = new_path
@@ -75,7 +75,7 @@ class Copy_Audio_Grab_To_Edit(IO_Fitting):
             'Grab')
         if not path.isdir(grab_dir):
             os.makedirs(grab_dir)
-        grab_path = path.join(grab_dir, self.fso.path)
+        grab_path = path.join(grab_dir, self.fso.filename)
         
         shutil.copy2(self.fso.path, grab_path)
         self.fso.props.working_path = grab_path
@@ -84,8 +84,8 @@ class Copy_Audio_Grab_To_Edit(IO_Fitting):
 class Add_Audio_To_WorkingAudio_DB(IO_Fitting):
     def fitting(self):
         data = {
-            'name': path.basename(self.fso.props.editorial_audio),
-            'location': path.dirname(self.fso.props.editorial_audio),
+            'name': path.basename(self.fso.props.working_path),
+            'location': path.dirname(self.fso.props.working_path),
             'project': self.fso.props.project,
         }
         if 'audio_db' in self.fso.props:
@@ -99,6 +99,7 @@ class Add_Audio_To_WorkingAudio_DB(IO_Fitting):
             if isinstance(audio_db, Stem):
                 data['stem'] = audio_db
         self.fso.props.working_audio_db = WorkingAudio().new_or_get(**data)
+        print("added to workingaudio db")
 
 
 class Add_MP3_To_DB(IO_Fitting):

@@ -6,19 +6,20 @@
 #     _module = loader.find_module(module_name).load_module(module_name)
 #     globals()[module_name] = _module
 
-from .test_fitting import Test_Fitting
-from .test_fitting2 import Test_Fitting2
-from .base_fittings.async_fitting import Async_Fitting
-from .async_test_fitting import Async_Test_Fitting
 
 from .audio_grab_fittings import (
     Rename_Audio_Grab, 
     Move_Audio_Grab_To_Server, 
     Copy_Audio_Grab_To_Edit, 
     Save_Audio_Grab_To_DB,
-    Add_Transcode_To_DB,
+    Add_Audio_To_WorkingAudio_DB,
+    Add_MP3_To_DB
 )
 
 from .ffmpeg_fittings import (
     Transcode_To_MP3,
+)
+
+from .asana_fittings import (
+    Asana_Create_Task
 )

@@ -23,17 +23,11 @@ if __name__ == "__main__":
 
     from peewee import OperationalError
 
-    # from database.models.client_model import Client
-    # from database.models.project_model import Project
-    # from database.models.shot_model import Shot
-    # from database.models.render_seq_model import RenderSeq
+    from plant.database.models import (
+        Client, Project, Shot, AudioGrab, Music, Mix, Stem, WorkingAudio, 
+        Asana_Project, Asana_Tag, Asana_Task, Asana_User
+    )
 
-    test_dict = {'name': 'Pat'}
-
-    test_box = Box(test_dict)
-
-    print('name' in test_box)
-    print('boop' in test_box)
 
     try:
         Client.create_table()
@@ -48,179 +42,72 @@ if __name__ == "__main__":
     except OperationalError:
         print('Shot table already exists')
     try:
-        RenderSeq.create_table()
+        AudioGrab.create_table()
     except OperationalError:
-        print('RenderSeq table already exists')
-
-    # Client().new(name="gerkx")
-    # Client().new(name="gerkx")
+        print('AudioGrab table already exists')
+    try:
+        Music.create_table()
+    except OperationalError:
+        print('Music table already exists')
+    try:
+        Mix.create_table()
+    except OperationalError:
+        print('Mix table already exists')
+    try:
+        Stem.create_table()
+    except OperationalError:
+        print('Stem table already exists')
+    try:
+        WorkingAudio.create_table()
+    except OperationalError:
+        print('WorkingAudio table already exists')
+    try:
+        Asana_User.create_table()
+    except OperationalError:
+        print('Asana_User table already exists')
+    try:
+        Asana_Task.create_table()
+    except OperationalError:
+        print('Asana_Task table already exists')
+    try:
+        Asana_Project.create_table()
+    except OperationalError:
+        print('Asana_Project table already exists')
+    try:
+        Asana_Tag.create_table()
+    except OperationalError:
+        print('Asana_Tag table already exists')
 
 
     gerkx = Client().new_or_get('gerkx')
 
 
-    workbench = Project().new_or_get(client=gerkx, name='workbench')
-    attic = Project().new_or_get(client=gerkx, name='attic')
-    kitchen = Project().new_or_get(client=gerkx, name='kitchen')
-
-    top = Shot().new_or_get(project=workbench, name='top', shot='101')
-    left = Shot().new_or_get(project=workbench, name='left', shot='102')
-    counter = Shot().new_or_get(project=kitchen, name='counter', shot='101')
- 
-    ver01 = RenderSeq().new_or_get(shot=top, name='top_v001', inbound_name='top', location='attic')
-    ver02 = RenderSeq().new_or_get(shot=top, name='top_v002', inbound_name='top', location='attic')
-
-    query = Project.get(Project.name == 'workbench')
-    shot = next(shot for shot in query.shots if shot.name == 'top')
-    print(len(shot.renders))
-
-    # shots = [shots for shots in query.shots]
-    # print(shots[0].name)
-    # print(shots[0].renders)
-    # vers = [vers for vers in shots.renders]
-    # print([ver.name for ver in vers])
-
-    # query = (RenderSeq
-    #         .select(RenderSeq, Shot)
-
-    # )
+    from plant.templates.audio.audio_grab import audio_grab_template
 
 
-    # print(query.name, query.guid)
-    # Project.get_or_create(client = gerkx, name = 'attic', defaults={'guid': generate()})
+    fittings = [
+        'Rename_Audio_Grab', 'Move_Audio_Grab_To_Server', 'Save_Audio_Grab_To_DB',
+        'Copy_Audio_Grab_To_Edit', 'Add_Audio_To_WorkingAudio_DB', 'Asana_Create_Task',
+        'Transcode_To_MP3', 'Add_MP3_To_DB'
+    ]
 
-    # Project.get_or_create(client = gerkx, name = 'workbench', defaults={'guid': generate()})
-
-    # for project in gerkx.projects:
-    #     print("xxxxxxx ", project.name, project.guid)
-    
-
-    # db = SqliteDatabase('boop.db')
-
-    # class Person(Model):
-    #     name = CharField()
-    #     birthday = DateField()
-
-    #     class Meta:
-    #         database = db
-
-    # class Pet(Model):
-    #     owner = ForeignKeyField(Person, backref='pets')
-    #     name = CharField()
-    #     animal_type = CharField()
-
-    #     class Meta:
-    #         database = db
-
-    # db.connect()
-
-    # db.create_tables([Person, Pet])
-
-    # tia_cole = Person(name='Nicole', birthday=date(1985, 5, 3))
-    # tia_cole.save()
-
-    # amanda = Person.create(name='Amanda', birthday=date(1982,7,27))
-
-    # tia_cole.name = 'Nikki'
-    # tia_cole.save()
-
-    # amanda_cat = Pet.create(owner=amanda, name='Belle', animal_type='cat')
-    # nikki_dog = Pet.create(owner=tia_cole, name='Chloe', animal_type='dog')
-
-    # wifey = Person.select().where(Person.name == 'Amanda')
-
-    # sistra = Person.get(Person.name == 'Nikki')
-
-    # query = (
-    #     Pet.select(Pet, Person)
-    #     .join(Person)
-    #     .where(Pet.animal_type == 'cat')
-    # )
-    
-    # for pet in query:
-    #     print(pet.name, pet.owner.name)
-
-
-
-    # db.close()
-
-
-
-
-
-    # loop = asyncio.get_event_loop()
-    # queues = Queue()
-    json_url = 'https://jsonplaceholder.typicode.com/posts'
-
-    
-    # from plant.pipe.fittings.test_fitting import Test_Fitting
-    # from plant.pipe.fittings.test_fitting2 import Test_Fitting2
-    from plant.pipe.fittings.base_fittings.async_fitting import Async_Fitting
-    from plant.pipe.fittings.async_test_fitting import Async_Test_Fitting
-
-
-    class_str = "Async_Test_Fitting"
     watch = "F:\\tmp\\watch"
     reject = "F:\\tmp\\reject"
+    edit = "F:\\tmp\\edit"
+    server = 'F:\\tmp\\server'
 
-    filtro = {
-        'template': '${prefix}_S${sea}E${epi}_SQ${seq}_SH${shot}_INT${frame}',
-        'definitions': {
-            'prefix': {
-                'type': 'alpha_numeric',
-                'options': {
-                    "min_length": 1
-                }
-            },
-            'sea': {
-                'type': 'numeric',
-                'options': {
-                    "min_length": 1,
-                    "max_length": 5
-                }
-            },
-            'epi': {
-                'type': 'numeric',
-                'options': {
-                    "min_length": 1,
-                    "max_length": 5
-                }
-            },
-            'seq': {
-                'type': 'numeric',
-                'options': {
-                    "min_length": 1,
-                    "max_length": 5
-                }
-            },
-            'shot': {
-                'type': 'numeric',
-                'options': {
-                    "min_length": 1,
-                    "max_length": 5
-                }
-            },
-            'frame': {
-                'type': 'numeric',
-                'options': {
-                    "min_length": 1,
-                    "max_length": 5
-                }
-            },
-        }
-    }
     
     config = [{
-        'name': 'test_pipe',
+        'name': 'audio_grab',
         'dir' : watch,
         'reject_dir' : reject,
-        'fittings' : [class_str],
-        'filters' : [filtro],
-        'props': {'base_dir': "F:\\tmp\\dos", 'url': json_url}
+        'fittings' : fittings,
+        'filters' : [audio_grab_template],
+        'props': {'client': 'monster', 'editorial': edit, 'season': 2, 'server': server, 'program': 'monster' }
     }]
 
     
-    # plant = Plant(config)
+    plant = Plant(config)
 
     # plant.start()
     

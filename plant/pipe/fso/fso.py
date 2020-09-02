@@ -42,10 +42,14 @@ class FSO:
         self.broadcast()
 
     def lock(self):
+        # print('locking fso')
         self.__locked = True
+        # print('fso locked')
 
     def unlock(self):
+        # print('unlocking fso')
         self.__locked = False
+        # print('fso unlocked')
 
     @property
     def inbound_name(self):

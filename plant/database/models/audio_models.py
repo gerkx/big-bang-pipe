@@ -17,7 +17,7 @@ class Music(AudioModel):
     project = ForeignKeyField(Project, backref='music')
 
 
-class Mix(AudioGrab):
+class Mix(AudioModel):
     project = ForeignKeyField(Project, backref='mixes')
     lang = CharField(null=True)
 
@@ -53,6 +53,11 @@ class WorkingAudio(BaseModel):
             } 
         )
         if not created:
-            working_audio.update(location = location, modified = datetime.now(), **kwargs)
-            working_audio.execute()
+            u = (self
+                .update(location = location, modified = datetime.now(), **kwargs)
+                .where(self.guid == working_audio.guid))
+            u.execute()
+            return u
+            # working_audio.update(location = location, modified = datetime.now(), **kwargs)
+            # working_audio.execute()
         return working_audio
