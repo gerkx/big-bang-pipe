@@ -98,8 +98,7 @@ class Add_Audio_To_WorkingAudio_DB(IO_Fitting):
                 data['mix'] = audio_db
             if isinstance(audio_db, Stem):
                 data['stem'] = audio_db
-        self.fso.props.working_audio_db = WorkingAudio().new_or_get(**data)
-        print("added to workingaudio db")
+        self.fso.props.working_db = WorkingAudio().new_or_get(**data)
 
 
 class Add_MP3_To_DB(IO_Fitting):

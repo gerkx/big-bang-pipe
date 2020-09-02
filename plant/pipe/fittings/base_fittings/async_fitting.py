@@ -15,8 +15,8 @@ class Async_Fitting:
         self.fso:Type[FSO] = FSO
         self.__guid:str = generate()
         self._subscribers:List[Callable] = []
-        self.client:Type[AsyncClient] = client
-
+        # self.client:Type[AsyncClient] = client
+        self.client = None
 
     def enqueue(self):
         self.state.enqueue()
@@ -38,16 +38,15 @@ class Async_Fitting:
             self._subscribers.append(callback)
 
     async def main(self):
-        print("async main")
-        print(self.fso.locked)
         while self.fso.locked:
             print("fso locked")
             asyncio.sleep(.1)
         if not self.fso.locked:
+            self.client = AsyncClient()
             self.fso.lock()
-            print(self.fso.locked)
             self.state.process()
             await self.fitting()
+            self.fso.unlock()
             self.state.finish()
 
     async def fitting(self):

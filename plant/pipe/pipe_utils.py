@@ -28,7 +28,7 @@ def init_Pipe(queues, client:Type[AsyncClient], callback, **kwargs):
         client = client,
         filters = filters,
         fittings = fittings,
-        props = config.props
+        props = config.props,
     )
     new_pipe.subscribe(callback)
     return new_pipe

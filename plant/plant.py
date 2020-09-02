@@ -1,4 +1,4 @@
-import time
+import asyncio, time
 from typing import List, Type
 from threading import Event, Thread
 
@@ -25,9 +25,10 @@ class Plant:
         self.start()
 
     def antenna(self, guid):
-        # pipe = next(pipe for pipe in self.pipes if pipe.guid == guid)
-        # print(self.pipe_summary(pipe))
-        print(self.summary())
+        pass
+        # print("="*10)
+        # print(self.summary())
+        # print("="*10)
 
     def start(self):
         try:

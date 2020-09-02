@@ -28,8 +28,8 @@ class IO_Fitting:
             self.fso.lock()
             self.state.process()
             self.fitting()
-            self.state.finish()
             self.fso.unlock()
+            self.state.finish()
 
     def subscribe(self, callback:Callable):
         if not callback in self._subscribers:

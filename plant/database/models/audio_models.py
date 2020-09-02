@@ -57,7 +57,4 @@ class WorkingAudio(BaseModel):
                 .update(location = location, modified = datetime.now(), **kwargs)
                 .where(self.guid == working_audio.guid))
             u.execute()
-            return u
-            # working_audio.update(location = location, modified = datetime.now(), **kwargs)
-            # working_audio.execute()
         return working_audio
