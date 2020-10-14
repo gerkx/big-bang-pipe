@@ -7,7 +7,7 @@ from peewee import (Model, SqliteDatabase,
 )
 
 
-db = SqliteDatabase('temp.db')
+db = SqliteDatabase('bbb.db')
 # PORTED
 class BaseModel(Model):
     id = AutoField()

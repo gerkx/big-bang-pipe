@@ -30,6 +30,7 @@ if __name__ == "__main__":
 
 
     try:
+        print('zoinks')
         Client.create_table()
     except OperationalError:
         print('Client table already exists')
@@ -79,35 +80,37 @@ if __name__ == "__main__":
         print('Asana_Tag table already exists')
 
 
-    gerkx = Client().new_or_get('gerkx')
+    # gerkx = Client().new_or_get('gerkx')
 
 
-    from plant.templates.audio.audio_grab import audio_grab_template
+    # from plant.templates.audio.audio_grab import audio_grab_template
 
 
-    fittings = [
-        'Rename_Audio_Grab', 'Move_Audio_Grab_To_Server', 'Save_Audio_Grab_To_DB',
-        'Copy_Audio_Grab_To_Edit', 'Add_Audio_To_WorkingAudio_DB', 'Asana_Create_Task',
-        'Transcode_To_MP3', 'Add_MP3_To_DB'
-    ]
+    # fittings = {
+    #     'audio_grab': [
+    #         'Rename_Audio_Grab', 'Move_Audio_Grab_To_Server', 'Save_Audio_Grab_To_DB',
+    #         'Copy_Audio_Grab_To_Edit', 'Add_Audio_To_WorkingAudio_DB', 'Asana_Create_Task',
+    #         'Transcode_To_MP3', 'Add_MP3_To_DB'
+    #     ]
+    # }
 
-    watch = "F:\\tmp\\watch"
-    reject = "F:\\tmp\\reject"
-    edit = "F:\\tmp\\edit"
-    server = 'F:\\tmp\\server'
-
-    
-    config = [{
-        'name': 'audio_grab',
-        'dir' : watch,
-        'reject_dir' : reject,
-        'fittings' : fittings,
-        'filters' : [audio_grab_template],
-        'props': {'client': 'monster', 'editorial': edit, 'season': 2, 'server': server, 'program': 'monster' }
-    }]
+    # watch = "F:\\tmp\\watch"
+    # reject = "F:\\tmp\\reject"
+    # edit = "F:\\tmp\\edit"
+    # server = 'F:\\tmp\\server'
 
     
-    plant = Plant(config)
+    # config = [{
+    #     'name': 'audio_grab',
+    #     'dir' : watch,
+    #     'reject_dir' : reject,
+    #     'fittings' : fittings,
+    #     'filters' : [audio_grab_template],
+    #     'props': {'client': 'monster', 'editorial': edit, 'season': 2, 'server': server, 'program': 'monster' }
+    # }]
+
+    
+    # plant = Plant(config)
 
     # plant.start()
     

@@ -3,7 +3,7 @@ from threading import Thread, Event
 import time
 
 class FIFO_Queue:
-    def __init__(self, number_of_threads:int = 8):
+    def __init__(self, number_of_threads:int = 1):
         self.__active = True
         self._queue:object = Queue()
         self.number_of_threads:int = number_of_threads

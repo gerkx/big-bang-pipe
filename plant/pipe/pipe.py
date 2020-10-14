@@ -15,7 +15,7 @@ class Pipe:
         reject_dir:str,
         queues:object,
         filters:list, 
-        fittings:list, 
+        fittings:dict, 
         props:dict,
         recurse:bool = False,
     ):
@@ -28,7 +28,7 @@ class Pipe:
         self.queues:object = queues
         self.filters:list = filters
         self.recurse:bool = recurse
-        self._fittings:list = fittings
+        self._fittings:dict = fittings
         self._contents:list = self.init_pipe_contents()
         self.__active:bool = True
         self.__lock:bool = False
@@ -129,7 +129,7 @@ class Pipe:
 
     def create_fso(self, fitting_key:str, fso_path:str, props:dict):
         fittings = []
-        for fitting in self._fittings:
+        for fitting in self._fittings[fitting_key]:
             if Async_Fitting in fitting.__bases__:
                 fittings.append(fitting())
             else:

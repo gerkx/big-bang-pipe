@@ -10,7 +10,7 @@ from retrying import retry
 
 # from .project_model import Project
 
-db = SqliteDatabase('temp.db', timeout = 15)
+db = SqliteDatabase('pipe.db', timeout = 15)
 
 class BaseModel(Model):
     id = AutoField()

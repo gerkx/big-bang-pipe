@@ -29,7 +29,7 @@ class Transcode_To_MP3(CPU_Fitting):
             os.makedirs(transcode_dir)
         transcode_path = path.join(transcode_dir, self.fso.name + '.mp3')
         ffmpeg_cmd = (
-            f'ffmpeg -i {self.fso.path} -vn -ar 44100 -ac 2 -b:a 128k -y {transcode_path}'
+            f'ffmpeg -i "{self.fso.path}" -vn -ar 44100 -ac 2 -b:a 128k -y "{transcode_path}"'
         )
         subprocess.run(ffmpeg_cmd)
         self.fso.props.mp3_name = self.fso.name + '.mp3'

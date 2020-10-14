@@ -16,10 +16,17 @@ def init_filter(filter:str):
     return Filter(filter)
 
 def init_Pipe(queues, callback, **kwargs):
+
     config = Box(kwargs)
+
     config.props.client = Client().new_or_get(config.props.client)
     filters = [init_filter(filter) for filter in config.filters]
-    fittings = [call_fitting(fitting) for fitting in config.fittings]
+    # fittings = [call_fitting(fitting) for fitting in config.fittings]
+    fittings = {}
+
+    for key in config.fittings:
+        fittings[key] = [call_fitting(fitting) for fitting in config.fittings[key]]
+    print(fittings)
     new_pipe = Pipe(
         name = config.name,
         dir = config.dir, 
