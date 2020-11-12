@@ -25,7 +25,7 @@ class Grade(VisModel):
             defaults = {
                 'guid': generate(),
                 'inbound_name': inbound_name,
-                'location': location 
+                'location': location,
                 **kwargs
             }
         )

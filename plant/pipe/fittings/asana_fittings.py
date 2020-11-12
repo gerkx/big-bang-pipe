@@ -37,10 +37,11 @@ async def get_asana_proj(client, props):
                 'team': os.getenv('ASANA_TEAM')
             }
             url = 'https://app.asana.com/api/1.0/projects'
-            
+            print(data)
             try:
                 print(f"posting new asana project for episode {get_prod_num(props)}")
                 res = await client.post(url=url, data=data, headers=header)
+
                 res_data = Box(res.json()['data'])
                 proj = Asana_Project().new_or_get(
                     gid = res_data.gid,
@@ -59,7 +60,25 @@ def construct_note(fso):
     else:
         db = None
     if db:
-        if db.modified > db.created:
+        if 'grade_db' in fso.props:
+            project = fso.props.project
+            shot = fso.props.shot_db
+            if db.compo:
+                return (
+                    f'Plano {shot.shot} del episodio {project.production_number} '
+                    f'tiene una nueva versión etalonada '
+                    f'que se necesita integrar en el compo. '
+                    f'El plano etalonado es {fso.path}'
+                )
+            else:
+                return (
+                    f'Plano {shot.shot} del episodio {project.production_number} '
+                    f'ha sido actualizado con una nueva versión etalonada. '
+                    f'Está localizado en {db.location}'
+                )
+
+
+        elif db.modified > db.created:
             return (
                 f'{db.name} de episodio ' 
                 f'{fso.props.project.production_number} ha sido actualizado y está localizado en:\n'
@@ -83,11 +102,9 @@ class Asana_Create_Task(Async_Fitting):
         if not 'asana_project' in self.fso.props:
             if not 'project' in self.fso.props:
                 self.fso.props.project = get_project(self.fso.props)
-            print('getting asana project')
             self.fso.props.asana_project = await get_asana_proj(self.client, self.fso.props)
         
         if not self.fso.props.asana_project:
-            print(f"unable to post task for {self.fso.filename} - Error retrieving relevant project")
             return
         
         async with self.client as client:
@@ -124,3 +141,5 @@ class Asana_Create_Task(Async_Fitting):
 
                 else:
                     break
+
+        

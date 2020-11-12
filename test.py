@@ -15,6 +15,9 @@ from box import Box
 import httpx
 import json
 import asyncio
+
+import os
+import os.path as path
 if __name__ == "__main__":
 
     # from peewee import *
@@ -25,7 +28,7 @@ if __name__ == "__main__":
 
     from plant.database.models import (
         Client, Project, Shot, AudioGrab, Music, Mix, Stem, WorkingAudio, 
-        Asana_Project, Asana_Tag, Asana_Task, Asana_User
+        Asana_Project, Asana_Tag, Asana_Task, Asana_User, WorkingPost, Motion, Compo, Grade
     )
 
 
@@ -78,6 +81,29 @@ if __name__ == "__main__":
         Asana_Tag.create_table()
     except OperationalError:
         print('Asana_Tag table already exists')
+    try:
+        Motion.create_table()
+    except OperationalError:
+        print('Motion table already exists')
+    try:
+        Compo.create_table()
+    except OperationalError:
+        print('Compo table already exists')
+    try:
+        Grade.create_table()
+    except OperationalError:
+        print('Grade table already exists')
+    try:
+        WorkingPost.create_table()
+    except OperationalError:
+        print('WorkingPost table already exists')
+
+
+    ROOT_DIR = path.dirname(path.abspath(os.curdir))
+    MONSTER_DIR = path.abspath(path.join(ROOT_DIR, '..', '..', ))
+    ANIMATIC_DIR = path.abspath(path.join(MONSTER_DIR, 'EXCHANGE', 'BBB-Finales', 'Animatic'))
+    sea02 = path.join(ANIMATIC_DIR, f'S{str(int(2)).zfill(2)}')
+    print(path.isdir(sea02))
 
 
     # gerkx = Client().new_or_get('gerkx')

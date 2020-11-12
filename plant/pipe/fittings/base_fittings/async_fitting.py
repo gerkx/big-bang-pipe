@@ -40,16 +40,21 @@ class Async_Fitting:
             self._subscribers.append(callback)
 
     async def main(self):
-        while self.fso.locked:
-            print("fso locked")
-            asyncio.sleep(.1)
-        if not self.fso.locked:
-            self.client = AsyncClient(timeout=30.0)
-            self.fso.lock()
-            self.state.process()
-            await self.fitting()
-            self.fso.unlock()
-            self.state.finish()
+        # locked = False
+        # asyncio.sleep(.5)
+        # while self.fso.locked:
+        #     if not locked:
+        #         print("fso locked")
+
+
+        #     asyncio.sleep(.1)
+        # if not self.fso.locked:
+        self.client = AsyncClient(timeout=30.0)
+        self.fso.lock()
+        self.state.process()
+        await self.fitting()
+        self.fso.unlock()
+        self.state.finish()
 
     async def fitting(self):
         dur = random()*random()

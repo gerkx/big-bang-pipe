@@ -19,13 +19,14 @@ class Compo(VisModel):
         inbound_name:str, 
         **kwargs
     ):
+        print(f'location: {location}')
         new_compo_shot, _ = self.get_or_create(
             shot = shot,
             name = name,
             defaults = {
                 'guid': generate(),
                 'inbound_name': inbound_name,
-                'location': location 
+                'location': location, 
                 **kwargs
             }
         )

@@ -1,4 +1,4 @@
-from .dirs import AUDIO_INBOX, REJECT_INBOX, ROOT_DIR
+from .dirs import AUDIO_INBOX, REJECT_INBOX, ROOT_DIR, SERVER_DIR
 
 from plant.templates import audio_grab_template
 
@@ -18,7 +18,7 @@ audio_pipe_config = {
         'client': 'monster',
         'editorial': ROOT_DIR,
         'season': 2,
-        'server': 'Z:\\tmpServer',
+        'server': SERVER_DIR,
         'program': 'monster'
     }
 }

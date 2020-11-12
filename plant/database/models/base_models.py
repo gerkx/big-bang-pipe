@@ -10,13 +10,14 @@ from retrying import retry
 
 # from .project_model import Project
 
-db = SqliteDatabase('pipe.db', timeout = 15)
+# db = SqliteDatabase('pipe.db', timeout = 15)
+db = SqliteDatabase('test.db', timeout = 15)
 
 class BaseModel(Model):
     id = AutoField()
     guid = CharField()
     created = DateTimeField(default=datetime.datetime.now)
-    modified = DateTimeField(default=datetime.datetime.now, null=True)
+    modified = DateTimeField(default=datetime.datetime.now)
     
     class Meta:
         database = db
@@ -27,6 +28,9 @@ class VisModel(BaseModel):
     inbound_name = CharField()
     duration = IntegerField(null=True)
     frames = CharField(null=True)
+    mp4_name = CharField(null=True)
+    mp4_location = CharField(null=True)
+    mp4_link = CharField(null=True)
 
 class AudioModel(BaseModel):
     name = CharField()
