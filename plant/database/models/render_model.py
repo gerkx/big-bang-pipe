@@ -9,7 +9,7 @@ from .shot_model import Shot
 from .project_model import Project
 
 
-class RenderSeq(VisModel):
+class Render(VisModel):
     shot:Type[Shot] = ForeignKeyField(Shot, backref='renders')
     transcode_name:str = CharField(null=True)
     transcode_location:str = CharField(null=True)

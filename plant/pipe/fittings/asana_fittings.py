@@ -68,7 +68,7 @@ def construct_note(fso):
                     f'Plano {shot.shot} del episodio {project.production_number} '
                     f'tiene una nueva versión etalonada '
                     f'que se necesita integrar en el compo. '
-                    f'El plano etalonado es {fso.path}'
+                    f'El source del Compo está actualizado en {fso.props.comp_src_path}'
                 )
             else:
                 return (
@@ -78,6 +78,22 @@ def construct_note(fso):
                 )
 
 
+        elif 'render_db' in fso.props and (db.compo or db.grade):
+            if db.grade:
+                return (
+                    f'Hay un nuevo render de shot {fso.props.shot_name} '
+                    f'que necesita ser etalonado. El archivo está localizado en:\n'
+                    f'{fso.path}'
+                )
+            else:
+                return (
+                    f'Plano {shot.shot} del episodio {project.production_number} '
+                    f'tiene una nueva versión del render '
+                    f'que se necesita integrar en el compo. '
+                    f'El source del Compo está actualizado en {fso.props.comp_src_path}'
+                )
+
+        
         elif db.modified > db.created:
             return (
                 f'{db.name} de episodio ' 

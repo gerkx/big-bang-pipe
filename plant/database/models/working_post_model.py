@@ -7,7 +7,7 @@ from retrying import retry
 
 from .base_models import BaseModel
 from .shot_model import Shot
-from .render_seq_model import RenderSeq
+from .render_model import Render
 from .grade_model import Grade
 from .compo_model import Compo
 from .motion_model import Motion
@@ -17,7 +17,7 @@ class WorkingPost(BaseModel):
     name = CharField()
     location = CharField()
     link = CharField(null=True)
-    render = ForeignKeyField(RenderSeq, backref='working_renders', null=True)
+    render = ForeignKeyField(Render, backref='working_renders', null=True)
     grade = ForeignKeyField(Grade, backref='working_grades', null=True)
     compo = ForeignKeyField(Compo, backref='working_compos', null=True)
     motion = ForeignKeyField(Motion, backref='working_motion', null=True)
