@@ -116,3 +116,22 @@ class Transcode_Char_Audio(CPU_Fitting):
         self.fso.props.shot_name = shot_name
         time.sleep(.1)
 
+class Transcode_EXR_To_ProRes4444(CPU_Fitting):
+    def fitting(self):
+        if 'qt_dir' in self.fso.props:
+            qt_name = f'{self.fso.props.shot_name}.mov'
+            qt_path = path.join(self.fso.props.qt_dir, qt_name)
+
+            seq_path = f'{self.fso.path}.%04d.exr'
+
+            ffmpeg_cmd = (
+                'ffmpeg -framerate 25 -start_number 1001 '
+                '-color_primaries bt709 -color_trc bt709 -colorspace bt709 ' 
+                f'-i {seq_path} '
+                # Not sure if lut will be needed yet
+                # f'-vf lut3d="lut/3doubles.cube" ' 
+                f'-c:v prores_ks -pix_fmt yuva444p10le -profile:v 5 '
+                f'-y "{qt_path}"'
+            ) 
+            subprocess.run(ffmpeg_cmd)
+            self.fso.props.qt_path = qt_path

@@ -41,24 +41,39 @@ if __name__ == "__main__":
     dirs = []
     
     pt = Path(seq_path)
+    
 
     for p in pt.rglob("**/"):
         if p.is_dir():
             # print(p)
             dirs.append(p)
 
-
-    print(dirs)
+    # print("==============")
+    # print(dirs)
+    # print("==============")
 
     # print(fileseq.findSequencesOnDisk(dirs[3].__str__()))
     seqs = []
     for d in dirs:
+        # print("xxxxxxxxxxxxxxxxxxxx")
+        # print(d)
+        # print("xxxxxxxxxxxxxxxxxxxx")
         p = d.__str__()
+        # print("------------")
+        # print(p)
+        # print("------------")
         seq_arr = fileseq.findSequencesOnDisk(p)
         seqs = [*seqs, *seq_arr]
 
-    print(seqs)
-
+    seq = seqs[0]
+    ver_basename = seq.basename().split(".")[0]+"_v003."
+    # seq.setBasename(ver_basename)
+    seq.format(template='{dirname}{basename}{padding}{extension}')
+    paths = [path.basename(seq[idx]) for idx, _ in enumerate(seq.frameSet())]
+    print(paths[0])
+    for idx, frame in enumerate(seq.frameSet()):
+        # print(seq[idx])
+        print(str(frame).zfill(4))
     # try:
     #     print('zoinks')
     #     Client.create_table()
