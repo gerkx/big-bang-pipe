@@ -118,9 +118,12 @@ class Transcode_Char_Audio(CPU_Fitting):
 
 class Transcode_EXR_To_ProRes4444(CPU_Fitting):
     def fitting(self):
-        if 'qt_dir' in self.fso.props:
+        if 'qt_dir' and 'alfa_dir' in self.fso.props:
             qt_name = f'{self.fso.props.shot_name}.mov'
             qt_path = path.join(self.fso.props.qt_dir, qt_name)
+
+            alfa_name = f'{self.fso.props.shot_name}.alfa.mov'
+            alfa_path = path.join(self.fso.props.alfa_dir, alfa_name)
 
             seq_path = f'{self.fso.path}.%04d.exr'
 
@@ -128,10 +131,12 @@ class Transcode_EXR_To_ProRes4444(CPU_Fitting):
                 'ffmpeg -framerate 25 -start_number 1001 '
                 '-color_primaries bt709 -color_trc bt709 -colorspace bt709 ' 
                 f'-i {seq_path} '
-                # Not sure if lut will be needed yet
-                # f'-vf lut3d="lut/3doubles.cube" ' 
-                f'-c:v prores_ks -pix_fmt yuva444p10le -profile:v 5 '
-                f'-y "{qt_path}"'
+                f'-filter_complex "split [rgb][alfa_in], [alfa_in] alphaextract [alfa]" '
+                f'-map "[rgb]" -c:v prores_ks -pix_fmt yuv444p10le -profile:v 5 '
+                f'-y "{qt_path}" '
+                f'-map "[alfa]" -c:v prores_ks -pix_fmt yuv444p10le -profile:v 5 '
+                f'-y "{alfa_path}"'
             ) 
             subprocess.run(ffmpeg_cmd)
             self.fso.props.qt_path = qt_path
+            self.fso.props.alfa_path = alfa_path
