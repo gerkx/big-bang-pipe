@@ -60,9 +60,9 @@ def construct_note(fso):
     else:
         db = None
     if db:
+        shot = fso.props.shot_db
+        project = fso.props.project
         if 'grade_db' in fso.props:
-            project = fso.props.project
-            shot = fso.props.shot_db
             if db.compo:
                 return (
                     f'Plano {shot.shot} del episodio {project.production_number} '
@@ -90,7 +90,7 @@ def construct_note(fso):
                     f'Plano {shot.shot} del episodio {project.production_number} '
                     f'tiene una nueva versión del render '
                     f'que se necesita integrar en el compo. '
-                    f'El source del Compo está actualizado en {fso.props.comp_src_path}'
+                    f'El source del Compo está actualizado en {fso.props.compo_src_path}'
                 )
 
         

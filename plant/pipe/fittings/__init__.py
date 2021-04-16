@@ -21,6 +21,7 @@ from .ffmpeg_fittings import (
     Transcode_To_MP4,
     Transcode_To_MJPEG_QT,
     Transcode_Char_Audio,
+    Transcode_EXR_To_ProRes4444,
 )
 
 from .asana_fittings import (
@@ -61,3 +62,5 @@ from .grade_fittings import (
     Get_WorkingDB_Shot,
     Update_Edit_Shot,
 )
+
+from .render_fittings import *

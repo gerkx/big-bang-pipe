@@ -45,6 +45,8 @@ class Transcode_To_MP4(CPU_Fitting):
             subdir = 'Compo'
         if 'grade_db' in self.fso.props:
             subdir = 'Grade'
+        if 'render_db' in self.fso.props:
+            subdir = 'Shots'
 
         transcode_dir = path.join(
             self.fso.props.editorial,
@@ -119,13 +121,18 @@ class Transcode_Char_Audio(CPU_Fitting):
 class Transcode_EXR_To_ProRes4444(CPU_Fitting):
     def fitting(self):
         if 'qt_dir' and 'alfa_dir' in self.fso.props:
-            qt_name = f'{self.fso.props.shot_name}.mov'
+            basename = self.fso.props.img_seq.basename().split('.')[0]
+            qt_name = f'{basename}.mov'
             qt_path = path.join(self.fso.props.qt_dir, qt_name)
 
-            alfa_name = f'{self.fso.props.shot_name}.alfa.mov'
+            alfa_name = f'{basename}.Alfa.mov'
             alfa_path = path.join(self.fso.props.alfa_dir, alfa_name)
 
-            seq_path = f'{self.fso.path}.%04d.exr'
+            seq_path = (
+                f'{path.join(self.fso.path,self.fso.props.img_seq.basename())}'
+                f'%04d.exr'
+            )
+            
 
             ffmpeg_cmd = (
                 'ffmpeg -framerate 25 -start_number 1001 '
