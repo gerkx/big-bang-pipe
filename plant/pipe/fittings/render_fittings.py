@@ -57,6 +57,9 @@ class Detect_IMG_Sequences(IO_Fitting):
         if img_seq:
             self.fso.props.img_seq = img_seq
         else:
+            self.fso.props.error = (
+                f'Secuencia de imgágenes no encontrado'
+            )
             self.state.raise_error()
 
 class Check_For_Seq_Gaps(IO_Fitting):
@@ -68,6 +71,8 @@ class Check_For_Seq_Gaps(IO_Fitting):
             expected_num_frames = int(last_frame) - int(first_frame) + 1
             actual_num_frames = len(seq.frameSet())
             if actual_num_frames != expected_num_frames:
+                self.fso.props.error = (
+                    f'Hay {actual_num_frames} imágenes en la secuencia. Debe ser {expected_num_frames}.')
                 self.state.raise_error()
             # for idx, frame in enumerate(seq.frameSet()):
 
