@@ -59,6 +59,19 @@ class Detect_IMG_Sequences(IO_Fitting):
         else:
             self.state.raise_error()
 
+class Check_For_Seq_Gaps(IO_Fitting):
+    def fitting(self):
+        if 'img_seq' in self.fso.props:
+            seq = self.fso.props.img_seq
+            first_frame = seq.frameSet().start()
+            last_frame = seq.frameSet().end()
+            expected_num_frames = int(last_frame) - int(first_frame) + 1
+            actual_num_frames = len(seq.frameSet())
+            if actual_num_frames != expected_num_frames:
+                self.state.raise_error()
+            # for idx, frame in enumerate(seq.frameSet()):
+
+
 
 class Get_Project_DB(IO_Fitting):
     def fitting(self):
@@ -103,12 +116,14 @@ class Rename_Seq_With_Vers(IO_Fitting):
     def fitting(self):
         if 'img_seq' in self.fso.props:
             seq = self.fso.props.img_seq
-            print(seq)
             seq_dir = seq.dirname()
             seq_basename = seq.basename().split(".")[0]
             vers_basename = (
                 f'{seq_basename}_v{str(self.fso.props.version).zfill(3)}'
             )
+
+
+
             for idx, frame in enumerate(seq.frameSet()):
                 frame_path = seq[idx]
                 frame_num = str(frame).zfill(4)

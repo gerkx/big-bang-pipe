@@ -16,6 +16,7 @@ render_pipe_config = {
             'Rename_Dir_With_Vers', 
             'Extract_All_Dirs', 
             'Detect_IMG_Sequences',
+            'Check_For_Seq_Gaps',
             'Rename_Seq_With_Vers',
             'Move_Render_To_Server', 
             'Generate_Transcode_Dirs',

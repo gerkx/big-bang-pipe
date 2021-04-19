@@ -56,7 +56,7 @@ async def get_asana_proj(client, props):
 
 def construct_note(fso):
     if str(fso.state) == 'ERROR':
-        return f'{fso.filename} era rechazado. Se puede localizarlo en {fso.path} '
+        return f'{fso.filename} fue rechazado. Se puede localizarlo en {fso.path} '
     if 'working_db' in fso.props:
         db = fso.props.working_db
     else:
