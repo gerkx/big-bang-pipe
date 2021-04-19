@@ -29,6 +29,7 @@ render_pipe_config = {
             'Update_Working_Shot', 
             'Update_WorkingDB',
             'Asana_Create_Task',
+            'Update_Excel',
         ]
     },
     'props': {

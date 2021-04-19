@@ -5,6 +5,9 @@ from typing import Type
 from pathlib import Path
 
 import fileseq
+from openpyxl import load_workbook
+from openpyxl.styles import Fill, PatternFill
+from openpyxl.utils import get_column_letter
 
 from .base_fittings import IO_Fitting
 
@@ -74,7 +77,6 @@ class Check_For_Seq_Gaps(IO_Fitting):
                 self.fso.props.error = (
                     f'Hay {actual_num_frames} imágenes en la secuencia. Debe ser {expected_num_frames}.')
                 self.state.raise_error()
-            # for idx, frame in enumerate(seq.frameSet()):
 
 
 
@@ -272,3 +274,108 @@ class Update_WorkingDB(IO_Fitting):
             )
         )
         update.execute()
+
+class Update_Excel(IO_Fitting):
+    def add_headers(self, sheet):
+        sheet['A1'] = 'Plano'
+        sheet['B1'] = 'Fecha Ingresada'
+        sheet['C1'] = 'Render GUID'
+        sheet['D1'] = 'Shot GUID'
+        sheet['E1'] = 'Grade'
+        sheet['F1'] = 'Compo'
+        sheet['G1'] = 'Alta en editorial'
+
+        sheet.column_dimensions['A'].width = 35
+        sheet.column_dimensions['B'].width = 21
+        sheet.column_dimensions['C'].width = 24
+        sheet.column_dimensions['D'].width = 24
+        sheet.column_dimensions['E'].width = 5
+        sheet.column_dimensions['F'].width = 5
+        sheet.column_dimensions['G'].width = 19
+
+
+
+    def fitting(self): 
+        prod_num = str(self.fso.props.prod_number)
+        excel_dir = path.join(self.fso.props.editorial, 'Recursos', 'Docs')
+        excel_path = path.join(excel_dir, 'monster-T02-renders.xlsx')
+        
+        workbook = load_workbook(filename=excel_path)
+        # workbook.iso_dates = True
+        
+        sheet = None
+        sheets = workbook.sheetnames
+
+
+        if not prod_num in sheets:
+            new_sheet_idx = 1
+            for _, s in enumerate(sorted(sheets)):
+                if int(prod_num) > int(s):
+                    new_sheet_idx += 1
+                    
+            workbook.create_sheet(title=prod_num, index=new_sheet_idx)
+            sheet = workbook.get_sheet_by_name(prod_num)
+            self.add_headers(sheet)
+        else:
+            sheet = workbook[prod_num]
+        
+
+        row_idx = 2
+        other_vers = []     
+        for row in sheet.iter_rows(min_row=2):
+
+            if self.fso.name > row[0].value:
+                row_idx = row[0].row + 1
+            if self.fso.props.shot_db.guid == row[3].value:
+                other_vers.append(row)
+
+        for vers in other_vers:
+            if vers[2].value == self.fso.props.render_db.guid:
+                vers[6].value = 'sí'
+                vers[6].fill = PatternFill('solid', fgColor='45ff9f')
+            else:
+                vers[6].value = 'no'
+                vers[6].fill = PatternFill('solid', fgColor='FFFFFF')
+        
+        if not self.fso.props.render_db.guid in sheet['C']:
+            sheet.insert_rows(row_idx, amount=1)
+            sheet[f'A{row_idx}'].value = self.fso.name
+            sheet[f'B{row_idx}'].value = datetime.now()
+            sheet[f'C{row_idx}'].value = self.fso.props.render_db.guid
+            sheet[f'D{row_idx}'].value = self.fso.props.shot_db.guid
+            if self.fso.props.working_db.grade:
+                sheet[f'E{row_idx}'].value = 'sí'
+                sheet[f'E{row_idx}'].fill = PatternFill('solid', fgColor='ff85fb')
+            if self.fso.props.working_db.compo:
+                sheet[f'F{row_idx}'].value = 'sí'
+                sheet[f'F{row_idx}'].fill = PatternFill('solid', fgColor='59c8ff')
+            sheet[f'G{row_idx}'].value = 'sí'
+            sheet[f'G{row_idx}'].fill = PatternFill('solid', fgColor='45ff9f')
+
+        workbook.save(excel_path)
+            
+
+
+        
+
+
+        
+        
+
+
+
+        
+
+
+        
+
+
+
+
+        
+
+
+
+
+
+
