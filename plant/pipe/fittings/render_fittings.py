@@ -40,7 +40,7 @@ class Generate_Shot_Name(IO_Fitting):
 
 class Detect_IMG_Sequences(IO_Fitting):
     def fitting(self):
-        img_seq = []
+        img_seq = None
         for d in self.fso.props.dirs:
             p = d.__str__()
             exr_name = f'{self.fso.props.shot_name}.#.exr'
@@ -54,7 +54,10 @@ class Detect_IMG_Sequences(IO_Fitting):
                 img_seq = dir_seq
                 break
             # if 
-        self.fso.props.img_seq = img_seq
+        if img_seq:
+            self.fso.props.img_seq = img_seq
+        else:
+            self.state.raise_error()
 
 
 class Get_Project_DB(IO_Fitting):
@@ -98,27 +101,27 @@ class Rename_Dir_With_Vers(IO_Fitting):
 
 class Rename_Seq_With_Vers(IO_Fitting):
     def fitting(self):
-        # currently using first sequence found in directory
-        seq = self.fso.props.img_seq
-        print(seq)
-        seq_dir = seq.dirname()
-        seq_basename = seq.basename().split(".")[0]
-        vers_basename = (
-            f'{seq_basename}_v{str(self.fso.props.version).zfill(3)}'
-        )
-        for idx, frame in enumerate(seq.frameSet()):
-            frame_path = seq[idx]
-            frame_num = str(frame).zfill(4)
-            frame_ext = path.splitext(frame_path)[1]
-            frame_vers_basename = (
-                f'{vers_basename}.{frame_num}'
-                f'{frame_ext}'
+        if 'img_seq' in self.fso.props:
+            seq = self.fso.props.img_seq
+            print(seq)
+            seq_dir = seq.dirname()
+            seq_basename = seq.basename().split(".")[0]
+            vers_basename = (
+                f'{seq_basename}_v{str(self.fso.props.version).zfill(3)}'
             )
-            frame_vers_path = path.join(seq_dir, frame_vers_basename)
+            for idx, frame in enumerate(seq.frameSet()):
+                frame_path = seq[idx]
+                frame_num = str(frame).zfill(4)
+                frame_ext = path.splitext(frame_path)[1]
+                frame_vers_basename = (
+                    f'{vers_basename}.{frame_num}'
+                    f'{frame_ext}'
+                )
+                frame_vers_path = path.join(seq_dir, frame_vers_basename)
 
-            os.rename(frame_path, frame_vers_path)
+                os.rename(frame_path, frame_vers_path)
 
-        self.fso.props.img_seq.setBasename(f'{vers_basename}.')
+            self.fso.props.img_seq.setBasename(f'{vers_basename}.')
 
 
 class Move_Render_To_Server(IO_Fitting):
@@ -166,7 +169,7 @@ class Save_Render_To_DB(IO_Fitting):
 # class Update_
 
 
-class Generate_Edit_Dirs(IO_Fitting):
+class Render_Generate_Edit_Dirs(IO_Fitting):
     def fitting(self):
         recursos_dir = path.join(
             self.fso.props.editorial,
@@ -203,7 +206,7 @@ class Generate_Edit_Dirs(IO_Fitting):
 
 
 
-class Get_WorkingDB_Shot(IO_Fitting):
+class Render_Get_WorkingDB_Shot(IO_Fitting):
     def fitting(self):
         self.fso.props.working_db = WorkingPost().new_or_get(
             shot = self.fso.props.shot_db,

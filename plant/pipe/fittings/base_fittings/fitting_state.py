@@ -41,7 +41,8 @@ class Fitting_State:
         self.state = State.PROCESSING
 
     def finish(self):
-        self.state = State.FINISHED
+        if not self.state == State.ERROR:
+            self.state = State.FINISHED
     
     def raise_error(self):
         self.state = State.ERROR

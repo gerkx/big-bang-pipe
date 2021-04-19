@@ -1,12 +1,14 @@
 import os, shutil
 import os.path as path
 from typing import Type
+from datetime import datetime
 
 from httpx import AsyncClient
 from nanoid import generate
 
 from .fso import create_FSO, FSO
 from .fittings.base_fittings import Async_Fitting
+from .fittings import Asana_Create_Task
 
 class Pipe:
     def __init__(self,
@@ -72,6 +74,7 @@ class Pipe:
         fso_state = str(fso.state)
         if fso_state == 'FINISHED':
             self.remove_fso(fso)
+
         self.broadcast()
         self.__lock = False
 
@@ -102,7 +105,9 @@ class Pipe:
     def check_existing_pipe_contents(self):
         for fso in self._contents:
             if not fso.locked:
-                if not path.exists(fso.path) or str(fso.state) == 'FINISHED':
+                if str(fso.state) == 'ERROR':
+                    self.reject(fso.path) 
+                elif not path.exists(fso.path) or str(fso.state) == 'FINISHED':
                     self.remove_fso(fso)
                     self.broadcast()
 
@@ -145,11 +150,36 @@ class Pipe:
         return new_fso
     
     def reject(self, fso_path):
-        if not path.isdir(self.reject_directory):
-            os.makedirs(self.reject_directory)
-        reject_path = path.join(self.reject_directory, path.basename(fso_path))
-        print(f'{fso_path} doesn\'t match any filter criterias!')
-        shutil.move(fso_path, reject_path)
+
+        fso = next(obj for obj in self._contents if obj.path == fso_path)
+        if fso and not fso.locked:
+            fso.lock()
+            timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+            reject_subdir_name = timestamp + '_' + path.basename(fso_path)
+            
+            reject_dir = path.join(self.reject_directory, reject_subdir_name)
+            if not path.isdir(reject_dir):
+                os.makedirs(reject_dir)
+
+            reject_path = path.join(reject_dir, path.basename(fso_path))
+            
+            if path.isdir(fso_path):
+                if path.isdir(reject_path):
+                    shutil.copy2(fso_path, reject_path)
+                else:
+                    shutil.move(fso_path, reject_path)
+
+            else: 
+                shutil.move(fso_path, reject_path)
+            
+            fso.path = reject_path
+
+            Task = Asana_Create_Task()
+            Task.set_parent(fso)
+            Task.enqueue()
+            print(f'{fso_path}: processing error')
+            self.remove_fso(fso)
+
 
     def remove_fso(self, fso):
         self._contents.remove(fso)

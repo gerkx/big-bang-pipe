@@ -55,6 +55,8 @@ async def get_asana_proj(client, props):
 
 
 def construct_note(fso):
+    if str(fso.state) == 'ERROR':
+        return f'{fso.filename} era rechazado. Se puede localizarlo en {fso.path} '
     if 'working_db' in fso.props:
         db = fso.props.working_db
     else:
@@ -68,7 +70,7 @@ def construct_note(fso):
                     f'Plano {shot.shot} del episodio {project.production_number} '
                     f'tiene una nueva versión etalonada '
                     f'que se necesita integrar en el compo. '
-                    f'El source del Compo está actualizado en {fso.props.comp_src_path}'
+                    f'El source del Compo está actualizado en {fso.props.compo_src_path}'
                 )
             else:
                 return (
@@ -111,6 +113,8 @@ def construct_note(fso):
             f'{fso.filename} ha sido ingresado y está localizado en:\n'
             f'{fso.directory}'
         )
+
+
 
 
 class Asana_Create_Task(Async_Fitting):
