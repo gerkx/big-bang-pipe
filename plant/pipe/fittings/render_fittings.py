@@ -41,21 +41,29 @@ class Generate_Shot_Name(IO_Fitting):
         )
 
 
+
 class Detect_IMG_Sequences(IO_Fitting):
     def fitting(self):
+
         img_seq = None
         for d in self.fso.props.dirs:
             p = d.__str__()
             exr_name = f'{self.fso.props.shot_name}.#.exr'
+            exr_ver_name = f'{self.fso.props.shot_name}_v{self.fso.props.version}.#.exr'
             seq_path = path.join(p, exr_name)
+            seq_ver_path = path.join(p, exr_ver_name)
             dir_seq = None
             try:
                 dir_seq = fileseq.findSequenceOnDisk(seq_path)
             except:
-                continue
-            if dir_seq:
-                img_seq = dir_seq
+                pass
+            try:
+                dir_seq = fileseq.findSequenceOnDisk(seq_ver_path)
+            except:
+                pass
+            if not dir_seq:
                 break
+            img_seq = dir_seq
             # if 
         if img_seq:
             self.fso.props.img_seq = img_seq
@@ -103,8 +111,9 @@ class Get_Shot_DB(IO_Fitting):
 
 class Get_Version_Number(IO_Fitting):
     def fitting(self):
-        prev_renders = self.fso.props.shot_db.renders
-        self.fso.props.version = len(prev_renders) + 1
+        if not 'version' in self.fso.props:
+            prev_renders = self.fso.props.shot_db.renders
+            self.fso.props.version = len(prev_renders) + 1
 
 
 class Rename_Dir_With_Vers(IO_Fitting):
@@ -283,16 +292,15 @@ class Update_Excel(IO_Fitting):
         sheet['D1'] = 'Shot GUID'
         sheet['E1'] = 'Grade'
         sheet['F1'] = 'Compo'
-        sheet['G1'] = 'Alta en editorial'
+        # sheet['G1'] = 'Alta en editorial'
 
         sheet.column_dimensions['A'].width = 35
         sheet.column_dimensions['B'].width = 21
         sheet.column_dimensions['C'].width = 24
         sheet.column_dimensions['D'].width = 24
-        sheet.column_dimensions['E'].width = 5
-        sheet.column_dimensions['F'].width = 5
-        sheet.column_dimensions['G'].width = 19
-
+        sheet.column_dimensions['E'].width = 7
+        sheet.column_dimensions['F'].width = 7
+        # sheet.column_dimensions['G'].width = 19
 
 
     def fitting(self): 
@@ -301,11 +309,9 @@ class Update_Excel(IO_Fitting):
         excel_path = path.join(excel_dir, 'monster-T02-renders.xlsx')
         
         workbook = load_workbook(filename=excel_path)
-        # workbook.iso_dates = True
         
         sheet = None
         sheets = workbook.sheetnames
-
 
         if not prod_num in sheets:
             new_sheet_idx = 1
@@ -328,16 +334,9 @@ class Update_Excel(IO_Fitting):
                 row_idx = row[0].row + 1
             if self.fso.props.shot_db.guid == row[3].value:
                 other_vers.append(row)
-
-        for vers in other_vers:
-            if vers[2].value == self.fso.props.render_db.guid:
-                vers[6].value = 'sí'
-                vers[6].fill = PatternFill('solid', fgColor='45ff9f')
-            else:
-                vers[6].value = 'no'
-                vers[6].fill = PatternFill('solid', fgColor='FFFFFF')
         
-        if not self.fso.props.render_db.guid in sheet['C']:
+        render_guids = [c.value for c in sheet['C']]
+        if not self.fso.props.render_db.guid in render_guids:
             sheet.insert_rows(row_idx, amount=1)
             sheet[f'A{row_idx}'].value = self.fso.name
             sheet[f'B{row_idx}'].value = datetime.now()
@@ -349,11 +348,21 @@ class Update_Excel(IO_Fitting):
             if self.fso.props.working_db.compo:
                 sheet[f'F{row_idx}'].value = 'sí'
                 sheet[f'F{row_idx}'].fill = PatternFill('solid', fgColor='59c8ff')
-            sheet[f'G{row_idx}'].value = 'sí'
-            sheet[f'G{row_idx}'].fill = PatternFill('solid', fgColor='45ff9f')
+            # sheet[f'G{row_idx}'].value = 'sí'
+            # sheet[f'G{row_idx}'].fill = PatternFill('solid', fgColor='45ff9f')
 
-        workbook.save(excel_path)
-            
+        try:
+            workbook.save(excel_path)
+        except:
+            temp_filename = (
+                f'monster-T02-renders.'
+                f'copia{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.xlsx'
+                )
+            temp_excel_path = path.join(excel_dir, temp_filename)
+            try:
+                workbook.save(temp_excel_path)
+            except Exception as e:
+                print(e)
 
 
         

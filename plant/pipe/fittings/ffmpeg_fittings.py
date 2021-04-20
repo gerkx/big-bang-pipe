@@ -124,7 +124,9 @@ class Transcode_EXR_To_ProRes4444(CPU_Fitting):
             basename = self.fso.props.img_seq.basename().split('.')[0]
             qt_name = f'{basename}.mov'
             qt_path = path.join(self.fso.props.qt_dir, qt_name)
-
+            print('&'*45)
+            print(qt_path)
+            print('&'*45)
             alfa_name = f'{basename}.Alfa.mov'
             alfa_path = path.join(self.fso.props.alfa_dir, alfa_name)
 
@@ -133,6 +135,9 @@ class Transcode_EXR_To_ProRes4444(CPU_Fitting):
                 f'%04d.exr'
             )
             
+            print('='*45)
+            print(seq_path)
+            print('='*45)
 
             ffmpeg_cmd = (
                 'ffmpeg -framerate 25 -start_number 1001 '

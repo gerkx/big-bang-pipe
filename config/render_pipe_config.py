@@ -6,7 +6,7 @@ render_pipe_config = {
     'name': 'render_pipe',
     'dir': RENDER_INBOX,
     'reject_dir': REJECT_INBOX,
-    'filters': [render_template],
+    'filters': [render_template], 
     'fittings': {
         'render': [
             'Set_Prod_Number',

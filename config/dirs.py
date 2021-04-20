@@ -2,8 +2,8 @@ import os
 import os.path as path
 
 TEST_DIR = 'Z:\\test'
-ROOT_DIR = TEST_DIR
-# ROOT_DIR = path.dirname(path.abspath(os.curdir))
+# ROOT_DIR = TEST_DIR
+ROOT_DIR = path.dirname(path.abspath(os.curdir))
 
 MONSTER_DIR = path.abspath(path.join(ROOT_DIR, '..', '..', ))
 
@@ -19,11 +19,13 @@ AUDIO_INBOX = path.join(INBOX_DIR, 'audio')
 
 POST_INBOX = path.join(INBOX_DIR, 'post')
 
-RENDER_INBOX = path.join(INBOX_DIR, 'render')
+# RENDER_INBOX = path.join(INBOX_DIR, 'render')
+RENDER_INBOX = 'Q:\\_renders'
 
 EDITORIAL_INBOX = path.join(INBOX_DIR, 'editorial')
 
 ANIMATIC_INBOX = path.join(EDITORIAL_INBOX, 'animatic')
 
-# SERVER_DIR = 'Z:\\tmpServer'
-SERVER_DIR = path.join(TEST_DIR, 'tmpServer')
+INBOX_DIR
+SERVER_DIR = 'Z:\\tmpServer'
+# SERVER_DIR = path.join(TEST_DIR, 'tmpServer')
